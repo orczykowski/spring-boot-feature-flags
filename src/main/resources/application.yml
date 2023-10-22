@@ -2,11 +2,6 @@ feature-flags:
   enabled: true
   api:
     expose:
-      enabled: true
+      enabled: false
       endpoint: /feature-flags
-    manage:
-      enabled: true
-      endpoint: /admin/feature-flags
-  definitions:
-    - name: DUPA
-      enabled: ON
+

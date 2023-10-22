@@ -1,4 +1,4 @@
-package com.github.orczykowski.springbootfeatureflags;
+package io.github.orczykowski.springbootfeatureflags;
 
 import java.util.Objects;
 

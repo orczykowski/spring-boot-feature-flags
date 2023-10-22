@@ -1,4 +1,4 @@
-package com.github.orczykowski.springbootfeatureflags;
+package io.github.orczykowski.springbootfeatureflags;
 
 public class ConfigurationFeatureFlagsException extends RuntimeException {
     private static final String MESSAGE_PATTERN = "Invalid feature flags configuration. %s";

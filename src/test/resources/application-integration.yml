@@ -1,0 +1,15 @@
+feature-flags:
+  enabled: true
+  api:
+    expose:
+      enabled: true
+      endpoint: /my-feature-flags
+  definitions:
+    - name: FLAG_1
+      enabled: RESTRICTED_FOR_USERS
+      entitledUsers: 213, 1232
+    - name: FLAG_2
+      enabled: ON
+    - name: FLAG_3
+      enabled: OFF
+
