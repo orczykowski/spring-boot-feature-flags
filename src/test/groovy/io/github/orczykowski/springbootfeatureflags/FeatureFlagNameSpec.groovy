@@ -24,6 +24,17 @@ class FeatureFlagNameSpec extends Specification {
           name.toString() == "SOME_NAME"
     }
 
+    def "should create flag from very long string"() {
+        given:
+          def longStrName = "1" * 120
+        when:
+          def flag = new FeatureFlagName(longStrName)
+
+        then:
+          flag != null
+          flag.toString() == longStrName
+    }
+
     def "should not create Feature flag name with null or blank string"() {
         when:
           new FeatureFlagName(param)
@@ -33,6 +44,6 @@ class FeatureFlagNameSpec extends Specification {
           ex.message == "Invalid feature flags configuration. Feature flag name can not be null or blank"
 
         where:
-          param << [null, "", " "]
+          param << [null, "", " ", "1" * 121]
     }
 }

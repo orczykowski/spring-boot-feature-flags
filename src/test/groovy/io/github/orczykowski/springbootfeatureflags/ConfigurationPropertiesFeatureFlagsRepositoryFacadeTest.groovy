@@ -60,5 +60,17 @@ class ConfigurationPropertiesFeatureFlagsRepositoryFacadeTest extends Specificat
           maybeDefinition.isEmpty()
     }
 
+    def "should return work properly even if no flag is defined"() {
+        given:
+          def repository = new ConfigurationPropertiesFeatureFlagsRepository(definitions)
+        when:
+          def result = repository.definitions()
+
+        then:
+          result.isEmpty()
+
+        where:
+          definitions << [null, [] as Set]
+    }
 
 }

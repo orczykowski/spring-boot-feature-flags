@@ -7,22 +7,25 @@ import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 
 @ContextConfiguration
-@SpringBootTest(classes = [TestSpringBootApplication,
+@SpringBootTest(classes = [
+        TestSpringBootApplication,
         FeatureFlagsConfiguration])
 class DefaultConfigurationFeatureFlagSpec extends Specification {
 
-    @Autowired
+    @Autowired(required = false)
     FeatureFlagProvider featureFlagProvider
 
     @Autowired(required = false)
     FeatureFlagApi featureFlagApi
 
-    @Autowired
+    @Autowired(required = false)
     FeatureFlagRepository featureFlagRepository
 
-    @Autowired
+    @Autowired(required = false)
     FeatureFlagVerifier featureFlagVerifier
 
+    @Autowired(required = false)
+    MetricsPublisher metricsPublisher
 
     def "should create default bean with feature flag provider"() {
         expect:
@@ -42,5 +45,10 @@ class DefaultConfigurationFeatureFlagSpec extends Specification {
     def "should create default bean with feature flag verifier"() {
         expect:
           featureFlagVerifier != null
+    }
+
+    def "should create bean with metrics publisher"() {
+        expect:
+          metricsPublisher != null
     }
 }

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,13 +46,17 @@ class ConfigurationPropertiesFeatureFlagsRepositoryFacade implements FeatureFlag
         @ConstructorBinding
         ConfigurationPropertiesFeatureFlagsRepository(Set<FeatureFlagDefinition> definitions) {
             log.debug("all feature flags definitions: {}", definitions);
-            this.definitions = Objects.requireNonNullElseGet(definitions, () -> new HashSet<FeatureFlagDefinition>())
+            this.definitions = Objects.requireNonNullElseGet(definitions, this::emptyFlags)
                     .stream()
                     .collect(Collectors.toUnmodifiableMap(FeatureFlagDefinition::name, Function.identity()));
         }
 
         public Map<FeatureFlagName, FeatureFlagDefinition> definitions() {
             return definitions;
+        }
+
+        private Set<FeatureFlagDefinition> emptyFlags() {
+            return Collections.emptySet();
         }
     }
 }

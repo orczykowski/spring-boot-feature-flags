@@ -19,28 +19,52 @@ repositories {
 
 configurations {
     provided
+    integrationTestImplementation.extendsFrom testImplementation
+    integrationTestRuntime.extendsFrom testRuntime
 }
 
 sourceSets {
     main { compileClasspath += configurations.provided }
+
+    test {
+        groovy.srcDirs = ['src/test/groovy']
+        resources.srcDirs = ['src/test/resources']
+    }
+
+    integrationTest {
+        groovy.srcDirs = ['src/integrationTest/groovy']
+        resources.srcDirs = ['src/integrationTest/resources']
+        compileClasspath += sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
+    }
 }
 
 dependencies {
     provided 'org.springframework.boot:spring-boot-starter'
     provided 'org.springframework.boot:spring-boot-starter-web'
+    provided 'org.springframework.boot:spring-boot-starter-actuator'
 
     testImplementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
     testImplementation 'org.spockframework:spock-spring:2.3-groovy-4.0'
     testImplementation 'org.apache.groovy:groovy:4.0.15'
     testImplementation 'org.objenesis:objenesis:3.3'
-    testImplementation 'io.rest-assured:spring-mock-mvc:5.3.2'
+}
 
+task integrationTest(type: Test) {
+    description = 'Run integration tests'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
 tasks.named('test') {
+    useJUnitPlatform()
+}
+
+tasks.named('integrationTest') {
     useJUnitPlatform()
 }

@@ -12,12 +12,14 @@ public class FeatureFlagVerifier {
 
     private final UserContextProvider userContextProvider;
     private final FeatureFlagRepository featureFlagRepository;
-
+    private final MetricsPublisher metricsPublisher;
 
     public FeatureFlagVerifier(final FeatureFlagRepository featureFlagRepository,
-                               final UserContextProvider userContextProvider) {
+                               final UserContextProvider userContextProvider,
+                               final MetricsPublisher metricsPublisher) {
         this.featureFlagRepository = featureFlagRepository;
         this.userContextProvider = userContextProvider;
+        this.metricsPublisher = metricsPublisher;
     }
 
     public boolean verify(final FeatureFlagName featureFlagName) {
@@ -33,8 +35,24 @@ public class FeatureFlagVerifier {
     private Boolean check(final FeatureFlagDefinition flag) {
         return maybeUserContextProvider()
                 .flatMap(UserContextProvider::provide)
-                .map(flag::isEnableForUser)
-                .orElseGet(flag::isEnableForALlUser);
+                .map(user -> isEnableForUser(flag, user))
+                .orElseGet(() -> isEnableForALlUser(flag));
+    }
+
+    private boolean isEnableForALlUser(final FeatureFlagDefinition flag) {
+        final boolean enableForALlUser = flag.isEnableForALlUser();
+        if (Objects.nonNull(metricsPublisher)) {
+            metricsPublisher.reportVerification(flag.name(), enableForALlUser);
+        }
+        return enableForALlUser;
+    }
+
+    private boolean isEnableForUser(final FeatureFlagDefinition flag, final User user) {
+        final boolean enableForUser = flag.isEnableForUser(user);
+        if (Objects.nonNull(metricsPublisher)) {
+            metricsPublisher.reportVerification(flag.name(), user, enableForUser);
+        }
+        return enableForUser;
     }
 
     private Optional<UserContextProvider> maybeUserContextProvider() {
@@ -42,8 +60,10 @@ public class FeatureFlagVerifier {
     }
 
     private boolean noFlagFound(FeatureFlagName flagName) {
-        log.warn("Flag {} definition does not exist.", flagName);
+        log.warn("Feature Flag definition with name {} does not exist.", flagName);
+        if (Objects.nonNull(metricsPublisher)) {
+            metricsPublisher.reportFlagNotFound();
+        }
         return false;
     }
-
 }

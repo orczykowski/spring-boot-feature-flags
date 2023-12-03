@@ -3,7 +3,10 @@ feature-flags:
   api:
     expose:
       enabled: true
-      endpoint: /my-feature-flags
+    verify:
+      enabled: false
+    menage:
+      enabled: false
   definitions:
     - name: FLAG_1
       enabled: RESTRICTED_FOR_USERS
@@ -12,4 +15,3 @@ feature-flags:
       enabled: ON
     - name: FLAG_3
       enabled: OFF
-

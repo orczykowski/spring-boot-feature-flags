@@ -1,5 +1,6 @@
 package io.github.orczykowski.springbootfeatureflags;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,7 +26,15 @@ class FeatureFlagsConfiguration {
 
     @Bean
     FeatureFlagVerifier featureFlagVerifier(final FeatureFlagRepository featureFlagRepository,
+                                            @Autowired(required = false) final MetricsPublisher metricsPublisher,
                                             @Autowired(required = false) final UserContextProvider userContextProvider) {
-        return new FeatureFlagVerifier(featureFlagRepository, userContextProvider);
+        return new FeatureFlagVerifier(featureFlagRepository, userContextProvider, metricsPublisher);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = {"feature-flags.metrics.enabled"}, havingValue = "true")
+        //TODO  @ConditionalOnBean(MeterRegistry.class)
+    MetricsPublisher metricsPublisher(final MeterRegistry meterRegistry) {
+        return new MetricsPublisher(meterRegistry);
     }
 }

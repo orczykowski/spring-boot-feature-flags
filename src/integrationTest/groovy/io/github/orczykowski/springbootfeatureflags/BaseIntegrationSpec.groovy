@@ -1,5 +1,6 @@
 package io.github.orczykowski.springbootfeatureflags
 
+
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.server.LocalServerPort
@@ -15,7 +16,7 @@ import spock.lang.Specification
                 TestSpringBootApplication,
                 FeatureFlagsConfiguration,
                 TestAppConfiguration])
-class BaseE2ESpecification extends Specification {
+class BaseIntegrationSpec extends Specification {
     TestRestTemplate restTemplate = new TestRestTemplate()
 
     @LocalServerPort

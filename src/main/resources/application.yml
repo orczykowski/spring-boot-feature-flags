@@ -3,5 +3,9 @@ feature-flags:
   api:
     expose:
       enabled: false
-      endpoint: /feature-flags
+    menage:
+      enabled: false
+  metrics:
+    enabled: true
+
 

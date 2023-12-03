@@ -12,24 +12,25 @@ import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @RestController
-//@RequestMapping("${feature-flags.api.expose.endpoint}")
-@RequestMapping("/feature-flags")
-@ConditionalOnExpression("${feature-flags.enabled} and ${feature-flags.api.expose.enabled}")
-public class FeatureFlagApi {
+@RequestMapping("${feature-flags.api.base-path:/feature-flags}")
+@ConditionalOnExpression("""
+        ${feature-flags.enabled} and 
+            (${feature-flags.api.expose.enabled})""")
+class FeatureFlagApi {
     private final FeatureFlagProvider featureFlagProvider;
+    private final FeatureFlagVerifier verifier;
 
-    FeatureFlagApi(final FeatureFlagProvider featureFlagProvider) {
+    FeatureFlagApi(final FeatureFlagProvider featureFlagProvider,
+                   final FeatureFlagVerifier verifier) {
         this.featureFlagProvider = featureFlagProvider;
+        this.verifier = verifier;
     }
 
+    @ConditionalOnExpression("${feature-flags.api.expose.enabled}")
     @GetMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public FeatureFlagsResponse getFeatureFlags() {
-        return featureFlagProvider
-                .provide()
-                .map(FeatureFlagName::toString)
-                .collect(collectingAndThen(toUnmodifiableSet(), FeatureFlagsResponse::new));
+    FeatureFlagsResponse getFeatureFlags() {
+        return featureFlagProvider.provide().map(FeatureFlagName::toString).collect(collectingAndThen(toUnmodifiableSet(), FeatureFlagsResponse::new));
     }
-
 
     record FeatureFlagsResponse(Set<String> featureFlags) {
     }
