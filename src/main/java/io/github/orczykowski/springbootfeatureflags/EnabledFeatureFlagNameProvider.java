@@ -3,19 +3,19 @@ package io.github.orczykowski.springbootfeatureflags;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-class FeatureFlagProvider {
-    private final FeatureFlagRepository featureFlagRepository;
+class EnabledFeatureFlagNameProvider {
+    private final FeatureFlagSupplier featureFlagSupplier;
     private final UserContextProvider userContextProvider;
 
-    FeatureFlagProvider(
-            final FeatureFlagRepository featureFlagRepository,
+    EnabledFeatureFlagNameProvider(
+            final FeatureFlagSupplier featureFlagSupplier,
             final UserContextProvider userContextProvider) {
-        this.featureFlagRepository = featureFlagRepository;
+        this.featureFlagSupplier = featureFlagSupplier;
         this.userContextProvider = userContextProvider;
     }
 
-    Stream<FeatureFlagName> provide() {
-        return featureFlagRepository.findAllEnabledFeatureFlags()
+    Stream<FeatureFlagDefinition.FeatureFlagName> provide() {
+        return featureFlagSupplier.findAllEnabledFeatureFlags()
                 .filter(FeatureFlagDefinition::isEnable)
                 .filter(this::filterForUserIfNeeded)
                 .map(FeatureFlagDefinition::name);

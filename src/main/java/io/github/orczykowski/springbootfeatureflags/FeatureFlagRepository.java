@@ -1,12 +1,11 @@
 package io.github.orczykowski.springbootfeatureflags;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
+public interface FeatureFlagRepository extends FeatureFlagSupplier {
+    void removeByName(FeatureFlagDefinition.FeatureFlagName flagName);
 
-public interface FeatureFlagRepository {
+    FeatureFlagDefinition save(FeatureFlagDefinition definition);
 
-    Stream<FeatureFlagDefinition> findAllEnabledFeatureFlags();
-
-    Optional<FeatureFlagDefinition> findDefinition(FeatureFlagName featureFlagName);
+    Stream<FeatureFlagDefinition> findAll();
 }

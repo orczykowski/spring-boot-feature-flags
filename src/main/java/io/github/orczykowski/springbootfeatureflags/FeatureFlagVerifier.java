@@ -11,23 +11,23 @@ public class FeatureFlagVerifier {
     private static final Logger log = LoggerFactory.getLogger(FeatureFlagVerifier.class);
 
     private final UserContextProvider userContextProvider;
-    private final FeatureFlagRepository featureFlagRepository;
+    private final FeatureFlagSupplier featureFlagSupplier;
     private final MetricsPublisher metricsPublisher;
 
-    public FeatureFlagVerifier(final FeatureFlagRepository featureFlagRepository,
+    public FeatureFlagVerifier(final FeatureFlagSupplier featureFlagSupplier,
                                final UserContextProvider userContextProvider,
                                final MetricsPublisher metricsPublisher) {
-        this.featureFlagRepository = featureFlagRepository;
+        this.featureFlagSupplier = featureFlagSupplier;
         this.userContextProvider = userContextProvider;
         this.metricsPublisher = metricsPublisher;
     }
 
-    public boolean verify(final FeatureFlagName featureFlagName) {
+    public boolean verify(final FeatureFlagDefinition.FeatureFlagName featureFlagName) {
         if (Objects.isNull(featureFlagName)) {
             log.warn("Try verify null feature flag name.");
             return false;
         }
-        return featureFlagRepository.findDefinition(featureFlagName)
+        return featureFlagSupplier.findByName(featureFlagName)
                 .map(this::check)
                 .orElseGet(() -> noFlagFound(featureFlagName));
     }
@@ -47,7 +47,7 @@ public class FeatureFlagVerifier {
         return enableForALlUser;
     }
 
-    private boolean isEnableForUser(final FeatureFlagDefinition flag, final User user) {
+    private boolean isEnableForUser(final FeatureFlagDefinition flag, final FeatureFlagDefinition.User user) {
         final boolean enableForUser = flag.isEnableForUser(user);
         if (Objects.nonNull(metricsPublisher)) {
             metricsPublisher.reportVerification(flag.name(), user, enableForUser);
@@ -59,7 +59,7 @@ public class FeatureFlagVerifier {
         return Optional.ofNullable(userContextProvider);
     }
 
-    private boolean noFlagFound(FeatureFlagName flagName) {
+    private boolean noFlagFound(FeatureFlagDefinition.FeatureFlagName flagName) {
         log.warn("Feature Flag definition with name {} does not exist.", flagName);
         if (Objects.nonNull(metricsPublisher)) {
             metricsPublisher.reportFlagNotFound();

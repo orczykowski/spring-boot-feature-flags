@@ -1,5 +1,6 @@
 package io.github.orczykowski.springbootfeatureflags
 
+
 import spock.lang.Specification
 
 import java.util.stream.Stream
@@ -8,17 +9,17 @@ import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition
 import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.ON
 import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.RESTRICTED_FOR_USERS
 
-class FeatureFlagProviderSpec extends Specification {
-    private static final User USER_1 = new User("123")
-    private static final User USER_2 = new User("567")
+class EnabledFeatureFlagNameProviderSpec extends Specification {
+    private static final FeatureFlagDefinition.User USER_1 = new FeatureFlagDefinition.User("123")
+    private static final FeatureFlagDefinition.User USER_2 = new FeatureFlagDefinition.User("567")
 
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagName("FOR_ALL_1"), ON, null)
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_2 = new FeatureFlagDefinition(new FeatureFlagName("FOR_ALL_2"), ON, null)
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_1 = new FeatureFlagDefinition(new FeatureFlagName("FOR_USER_1"), RESTRICTED_FOR_USERS, Set.of(USER_1))
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_2 = new FeatureFlagDefinition(new FeatureFlagName("FOR_USER_2"), RESTRICTED_FOR_USERS, Set.of(USER_2))
-    private static final FeatureFlagDefinition DISABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagName("DISABLED"), OFF, Set.of())
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_ALL_1"), ON, null)
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_2 = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_ALL_2"), ON, null)
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_1 = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_USER_1"), RESTRICTED_FOR_USERS, Set.of(USER_1))
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_2 = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_USER_2"), RESTRICTED_FOR_USERS, Set.of(USER_2))
+    private static final FeatureFlagDefinition DISABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("DISABLED"), OFF, Set.of())
 
-    private FeatureFlagRepository flagRepository = Mock(FeatureFlagRepository)
+    private FeatureFlagSupplier flagRepository = Mock(FeatureFlagSupplier)
     private UserContextProvider userContextProvider = Mock(UserContextProvider)
 
 
@@ -27,7 +28,7 @@ class FeatureFlagProviderSpec extends Specification {
           flagRepository.findAllEnabledFeatureFlags() >> Stream.of(ENABLED_FEATURE_FLAG, ENABLED_FEATURE_FLAG_2,
                   DISABLED_FEATURE_FLAG, ENABLED_FEATURE_FLAG_FOR_USER_1)
 
-          def provider = new FeatureFlagProvider(flagRepository, null)
+          def provider = new EnabledFeatureFlagNameProvider(flagRepository, null)
 
         when:
           def flags = provider.provide()
@@ -43,7 +44,7 @@ class FeatureFlagProviderSpec extends Specification {
 
     def "should return empty result when user context is not defined and there is no enabled flags for user"() {
         given:
-          def provider = new FeatureFlagProvider(flagRepository, null)
+          def provider = new EnabledFeatureFlagNameProvider(flagRepository, null)
           flagRepository.findAllEnabledFeatureFlags() >> Stream.of(DISABLED_FEATURE_FLAG, ENABLED_FEATURE_FLAG_FOR_USER_1)
 
         when:
@@ -61,7 +62,7 @@ class FeatureFlagProviderSpec extends Specification {
     def "should return empty result when any flag is defined"() {
         given:
           flagRepository.findAllEnabledFeatureFlags() >> Stream.of()
-          def provider = new FeatureFlagProvider(flagRepository, null)
+          def provider = new EnabledFeatureFlagNameProvider(flagRepository, null)
 
         when:
           def flags = provider.provide()
@@ -76,7 +77,7 @@ class FeatureFlagProviderSpec extends Specification {
           userContextProvider.provide() >> Optional.of(USER_1)
 
         and:
-          def featureFlagProvider = new FeatureFlagProvider(flagRepository, userContextProvider)
+          def featureFlagProvider = new EnabledFeatureFlagNameProvider(flagRepository, userContextProvider)
 
         when:
           def flags = featureFlagProvider.provide()

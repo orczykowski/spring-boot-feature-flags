@@ -36,7 +36,7 @@ class ConfigurationPropertiesFeatureFlagsRepositoryFacadeTest extends Specificat
 
     def "should return flag details"() {
         when:
-          def maybeDefinition = facade.findDefinition(deff.name())
+          def maybeDefinition = facade.findByName(deff.name())
 
         then:
           maybeDefinition.isPresent()
@@ -51,10 +51,10 @@ class ConfigurationPropertiesFeatureFlagsRepositoryFacadeTest extends Specificat
 
     def "should return empty when flag does not exist"() {
         given:
-          def flagName = new FeatureFlagName("non_existing_flag")
+          def flagName = new FeatureFlagDefinition.FeatureFlagName("non_existing_flag")
 
         when:
-          def maybeDefinition = facade.findDefinition(flagName)
+          def maybeDefinition = facade.findByName(flagName)
 
         then:
           maybeDefinition.isEmpty()

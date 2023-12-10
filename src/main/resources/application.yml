@@ -1,9 +1,9 @@
 feature-flags:
-  enabled: true
+  enabled: false
   api:
     expose:
       enabled: false
-    menage:
+    manage:
       enabled: false
   metrics:
     enabled: true

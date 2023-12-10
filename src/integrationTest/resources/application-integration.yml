@@ -3,15 +3,6 @@ feature-flags:
   api:
     expose:
       enabled: true
-    verify:
-      enabled: false
-    menage:
-      enabled: false
-  definitions:
-    - name: FLAG_1
-      enabled: RESTRICTED_FOR_USERS
-      entitledUsers: 213, 1232
-    - name: FLAG_2
-      enabled: ON
-    - name: FLAG_3
-      enabled: OFF
+    manage:
+      enabled: true
+
