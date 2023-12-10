@@ -1,13 +1,14 @@
 plugins {
     id 'java-library'
-    id 'org.springframework.boot' version '3.1.4'
-    id 'io.spring.dependency-management' version '1.1.3'
     id 'groovy'
+    id 'io.github.gradle-nexus.publish-plugin' version "1.3.0"
+    id 'maven-publish'
+    id 'signing'
 }
 
-group = 'com.github.orczykowski'
+group = 'io.github.orczykowski'
 version = '1.0.0'
-description = "Springboot-feature-falgs library allows you to selectively manage availability of functionalities in your app."
+description = "Effortlessly manage and control application functionalities with our versatile library. Designed for consistent handling on both the backend and frontend, this tool allows you to easily enable or disable features, providing a seamless and technically efficient solution for optimizing user experiences."
 
 java {
     sourceCompatibility = '17'
@@ -21,6 +22,10 @@ configurations {
     provided
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntime.extendsFrom testRuntime
+}
+
+compileJava {
+    options.compilerArgs << '-parameters'
 }
 
 sourceSets {
@@ -40,19 +45,31 @@ sourceSets {
 }
 
 dependencies {
-    provided 'org.springframework.boot:spring-boot-starter'
-    provided 'org.springframework.boot:spring-boot-starter-web'
-    provided 'org.springframework.boot:spring-boot-starter-actuator'
+    provided 'org.springframework.boot:spring-boot-starter:3.2.1'
+    provided 'org.springframework.boot:spring-boot-starter-web:3.2.1'
+    provided 'org.springframework.boot:spring-boot-starter-actuator:3.2.1'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter'
-    testImplementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-actuator'
+    testImplementation 'org.springframework.boot:spring-boot-starter:3.2.1'
+    testImplementation 'org.springframework.boot:spring-boot-starter-web:3.2.1'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator:3.2.1'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.1'
     testImplementation 'org.spockframework:spock-core:2.3-groovy-4.0'
     testImplementation 'org.spockframework:spock-spring:2.3-groovy-4.0'
     testImplementation 'org.apache.groovy:groovy:4.0.15'
     testImplementation 'org.objenesis:objenesis:3.3'
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
+
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 task integrationTest(type: Test) {
@@ -67,4 +84,64 @@ tasks.named('test') {
 
 tasks.named('integrationTest') {
     useJUnitPlatform()
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username = property('ossrhUsername')
+            password = property('ossrhPassword')
+        }
+    }
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+//            beforeDeployment { MavenArtifact mavenArtifact -> signing.signPom(mavenArtifact) }
+            from components.java
+            groupId = project.group.toString()
+            artifactId = project.name
+            version = project.version.toString()
+            pom {
+                name = project.name
+                artifactId = project.name
+                description = project.description
+                url = 'https://github.com/orczykowski/spring-boot-feature-flags'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'orczykowski'
+                        name = 'Grzegorz Orczykowski'
+                        email = 'grzegorz.orczykowski@gmail.com'
+                        url = 'https://github.com/orczykowski'
+                    }
+                }
+                scm {
+                    connection = 'scm:git@github.com:orczykowski/spring-boot-feature-flags.git'
+                    developerConnection = 'scm:git@github.com:orczykowski/spring-boot-feature-flags.git'
+                    url = 'https://github.com/orczykowski/spring-boot-feature-flags'
+                }
+            }
+        }
+    }
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+
+    useGpgCmd()
+    sign(publishing.publications)
+//    sign configurations.archives
 }

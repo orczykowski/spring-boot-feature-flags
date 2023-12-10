@@ -7,7 +7,7 @@ class FeatureFlagNameSpec extends Specification {
 
     def "should trim white space from flag name"() {
         when:
-          def flagName = new FeatureFlagName(name)
+          def flagName = new FeatureFlagDefinition.FeatureFlagName(name)
 
         then:
           flagName.value() == "SOME"
@@ -18,7 +18,7 @@ class FeatureFlagNameSpec extends Specification {
 
     def "should print feature flag name without any extra signs"() {
         given:
-          def name = new FeatureFlagName("SOME_NAME")
+          def name = new FeatureFlagDefinition.FeatureFlagName("SOME_NAME")
 
         expect:
           name.toString() == "SOME_NAME"
@@ -28,7 +28,7 @@ class FeatureFlagNameSpec extends Specification {
         given:
           def longStrName = "1" * 120
         when:
-          def flag = new FeatureFlagName(longStrName)
+          def flag = new FeatureFlagDefinition.FeatureFlagName(longStrName)
 
         then:
           flag != null
@@ -37,13 +37,22 @@ class FeatureFlagNameSpec extends Specification {
 
     def "should not create Feature flag name with null or blank string"() {
         when:
-          new FeatureFlagName(param)
+          new FeatureFlagDefinition.FeatureFlagName(param)
 
         then:
-          def ex = thrown(ConfigurationFeatureFlagsException)
-          ex.message == "Invalid feature flags configuration. Feature flag name can not be null or blank"
+          def ex = thrown(InvalidFeatureFlagsException)
+          ex.message == "Feature flag name can not be null or blank"
 
         where:
-          param << [null, "", " ", "1" * 121]
+          param << [null, "", " "]
+    }
+
+    def "should not create Feature flag name from too long string"() {
+        when:
+          new FeatureFlagDefinition.FeatureFlagName("1" * 121)
+
+        then:
+          def ex = thrown(InvalidFeatureFlagsException)
+          ex.message == "Feature flag name is too long"
     }
 }

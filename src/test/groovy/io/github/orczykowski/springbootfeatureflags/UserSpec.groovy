@@ -1,12 +1,13 @@
 package io.github.orczykowski.springbootfeatureflags
 
+
 import spock.lang.Specification
 
 class UserSpec extends Specification {
 
     def "should print user name without any extra signs"() {
         given:
-          def name = new User("gustaw+1")
+          def name = new FeatureFlagDefinition.User("gustaw+1")
 
         expect:
           name.toString() == "gustaw+1"
@@ -14,11 +15,11 @@ class UserSpec extends Specification {
 
     def "should not create User with null or blank string"() {
         when:
-          new User((String) param)
+          new FeatureFlagDefinition.User((String) param)
 
         then:
-          def ex = thrown(ConfigurationFeatureFlagsException)
-          ex.message == "Invalid feature flags configuration. User identifier cannot be null or blank."
+          def ex = thrown(InvalidFeatureFlagsException)
+          ex.message == "User identifier cannot be null or blank."
 
         where:
           param << [null, "", " "]
@@ -26,16 +27,16 @@ class UserSpec extends Specification {
 
     def "should not create User with null"() {
         when:
-          new User((Number) null)
+          new FeatureFlagDefinition.User((Number) null)
 
         then:
-          def ex = thrown(ConfigurationFeatureFlagsException)
-          ex.message == "Invalid feature flags configuration. User identifier cannot be null or blank."
+          def ex = thrown(InvalidFeatureFlagsException)
+          ex.message == "User identifier cannot be null or blank."
     }
 
     def "should create user from string value"() {
         when:
-          def user = new User("USER_123")
+          def user = new FeatureFlagDefinition.User("USER_123")
 
         then:
           user != null
@@ -44,7 +45,7 @@ class UserSpec extends Specification {
 
     def "should create user from numeric value"() {
         when:
-          def user = new User(id)
+          def user = new FeatureFlagDefinition.User(id)
 
         then:
           user != null

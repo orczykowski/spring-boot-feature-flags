@@ -1,41 +1,40 @@
 package io.github.orczykowski.springbootfeatureflags
 
-
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.OFF
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.ON
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.RESTRICTED_FOR_USERS
+import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.ANYBODY
+import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.NOBODY
+import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.RESTRICTED
 
 class FeatureFlagDefinitionTestFactory {
 
-    static def enableForAll(FeatureFlagName name) {
-        new FeatureFlagDefinition(name, ON, [] as Set)
+    static def enableForAll(FeatureFlagDefinition.FeatureFlagName name) {
+        new FeatureFlagDefinition(name, ANYBODY, [] as Set)
     }
 
-    static def enableForUser(FeatureFlagName name, User userId) {
-        new FeatureFlagDefinition(name, RESTRICTED_FOR_USERS, [userId] as Set)
+    static def enableForUser(FeatureFlagDefinition.FeatureFlagName name, FeatureFlagDefinition.User userId) {
+        new FeatureFlagDefinition(name, RESTRICTED, [userId] as Set)
     }
 
-    static def disableForAll(FeatureFlagName name) {
-        new FeatureFlagDefinition(name, OFF, [] as Set)
+    static def disableForAll(FeatureFlagDefinition.FeatureFlagName name) {
+        new FeatureFlagDefinition(name, NOBODY, [] as Set)
     }
 
-    static def disableForUser(FeatureFlagName name, User userId) {
-        new FeatureFlagDefinition(name, OFF, [userId] as Set)
+    static def disableForUser(FeatureFlagDefinition.FeatureFlagName name, FeatureFlagDefinition.User userId) {
+        new FeatureFlagDefinition(name, NOBODY, [userId] as Set)
     }
 
     static def enableForAll(String name) {
-        enableForAll(new FeatureFlagName(name))
+        enableForAll(new FeatureFlagDefinition.FeatureFlagName(name))
     }
 
     static def disableForAll(String name) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), OFF, [] as Set)
+        new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName(name), NOBODY, [] as Set)
     }
 
     static def enableForUser(String name, String userId) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), RESTRICTED_FOR_USERS, [new User(userId)] as Set)
+        new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName(name), RESTRICTED, [new FeatureFlagDefinition.User(userId)] as Set)
     }
 
     static def disableForUser(String name, String userId) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), OFF, [new User(userId)] as Set)
+        new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName(name), NOBODY, [new FeatureFlagDefinition.User(userId)] as Set)
     }
 }
