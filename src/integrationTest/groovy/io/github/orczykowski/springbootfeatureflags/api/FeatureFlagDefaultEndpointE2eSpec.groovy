@@ -1,28 +1,28 @@
 package io.github.orczykowski.springbootfeatureflags.api
 
 import io.github.orczykowski.springbootfeatureflags.BaseIntegrationSpec
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 
-import static org.springframework.http.RequestEntity.get
+import static io.restassured.RestAssured.given
+import static org.hamcrest.CoreMatchers.hasItem
+import static org.springframework.http.HttpStatus.OK
 
 class FeatureFlagDefaultEndpointE2eSpec extends BaseIntegrationSpec {
 
     def "should present ony enabled feature flags names on api"() {
         given:
-          def request = get(apiUrl("feature-flags"))
-                  .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                  .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                  .build()
-        when:
-          def response = restTemplate.exchange(request, Map)
-        then:
-          response.statusCode == HttpStatus.OK
-          response.body != null
+          createFeatureFlag("FLAG_1", "ON")
+          createFeatureFlag("FLAG_2", "ON")
+
         and:
-          def body = response.body
-          body["featureFlags"] != null
-          body["featureFlags"].sort() == ["FLAG_1", "FLAG_2"]
+          def request = given(requestSpec())
+
+        when:
+          def response = request.get("feature-flags")
+
+        then:
+          response.then()
+                  .statusCode(OK.value())
+                  .body("featureFlags", hasItem("FLAG_1"))
+                  .body("featureFlags", hasItem("FLAG_2"))
     }
 }

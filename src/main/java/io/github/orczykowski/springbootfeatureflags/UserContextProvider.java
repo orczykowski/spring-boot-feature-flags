@@ -4,5 +4,5 @@ import java.util.Optional;
 
 public interface UserContextProvider {
 
-    Optional<User> provide();
+    Optional<FeatureFlagDefinition.User> provide();
 }

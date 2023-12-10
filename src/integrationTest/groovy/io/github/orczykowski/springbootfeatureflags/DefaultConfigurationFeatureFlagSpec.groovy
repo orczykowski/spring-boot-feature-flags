@@ -1,31 +1,39 @@
 package io.github.orczykowski.springbootfeatureflags
 
-
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ContextConfiguration
-import spock.lang.Specification
+import org.springframework.test.context.TestPropertySource
 
-@ContextConfiguration
-@SpringBootTest(classes = [
-        TestSpringBootApplication,
-        FeatureFlagsConfiguration])
-class DefaultConfigurationFeatureFlagSpec extends Specification {
-
-    @Autowired(required = false)
-    FeatureFlagProvider featureFlagProvider
+//Default configuration
+@TestPropertySource(properties = [
+        'feature-flags.api.expose.enabled=false',
+        'feature-flags.api.manage.enabled=false',
+        'feature-flags.metrics.enabled=true',])
+class DefaultConfigurationFeatureFlagSpec extends BaseIntegrationSpec {
 
     @Autowired(required = false)
-    FeatureFlagApi featureFlagApi
+    EnabledFeatureFlagNameProvider featureFlagProvider
 
     @Autowired(required = false)
-    FeatureFlagRepository featureFlagRepository
+    FeatureFlagPresenterApi featureFlagApi
+
+    @Autowired(required = false)
+    FeatureFlagSupplier featureFlagRepository
 
     @Autowired(required = false)
     FeatureFlagVerifier featureFlagVerifier
 
     @Autowired(required = false)
     MetricsPublisher metricsPublisher
+
+    @Autowired(required = false)
+    FeatureFlagExceptionHandler exceptionHandler
+
+    @Autowired(required = false)
+    FeatureFlagManagerApi managerApi
+
+    @Autowired(required = false)
+    FeatureFlagManager manager
+
 
     def "should create default bean with feature flag provider"() {
         expect:
@@ -35,6 +43,21 @@ class DefaultConfigurationFeatureFlagSpec extends Specification {
     def "should not create api controller for default configuration"() {
         expect:
           featureFlagApi == null
+    }
+
+    def "should not create manager api controller for default configuration"() {
+        expect:
+          managerApi == null
+    }
+
+    def "should not create manager service for default configuration"() {
+        expect:
+          manager == null
+    }
+
+    def "should not create exception handler for default configuration"() {
+        expect:
+          exceptionHandler == null
     }
 
     def "should create default bean with feature flag repository"() {

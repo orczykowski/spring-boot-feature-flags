@@ -7,35 +7,35 @@ import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition
 
 class FeatureFlagDefinitionTestFactory {
 
-    static def enableForAll(FeatureFlagName name) {
+    static def enableForAll(FeatureFlagDefinition.FeatureFlagName name) {
         new FeatureFlagDefinition(name, ON, [] as Set)
     }
 
-    static def enableForUser(FeatureFlagName name, User userId) {
+    static def enableForUser(FeatureFlagDefinition.FeatureFlagName name, FeatureFlagDefinition.User userId) {
         new FeatureFlagDefinition(name, RESTRICTED_FOR_USERS, [userId] as Set)
     }
 
-    static def disableForAll(FeatureFlagName name) {
+    static def disableForAll(FeatureFlagDefinition.FeatureFlagName name) {
         new FeatureFlagDefinition(name, OFF, [] as Set)
     }
 
-    static def disableForUser(FeatureFlagName name, User userId) {
+    static def disableForUser(FeatureFlagDefinition.FeatureFlagName name, FeatureFlagDefinition.User userId) {
         new FeatureFlagDefinition(name, OFF, [userId] as Set)
     }
 
     static def enableForAll(String name) {
-        enableForAll(new FeatureFlagName(name))
+        enableForAll(new FeatureFlagDefinition.FeatureFlagName(name))
     }
 
     static def disableForAll(String name) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), OFF, [] as Set)
+        new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName(name), OFF, [] as Set)
     }
 
     static def enableForUser(String name, String userId) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), RESTRICTED_FOR_USERS, [new User(userId)] as Set)
+        new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName(name), RESTRICTED_FOR_USERS, [new FeatureFlagDefinition.User(userId)] as Set)
     }
 
     static def disableForUser(String name, String userId) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), OFF, [new User(userId)] as Set)
+        new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName(name), OFF, [new FeatureFlagDefinition.User(userId)] as Set)
     }
 }

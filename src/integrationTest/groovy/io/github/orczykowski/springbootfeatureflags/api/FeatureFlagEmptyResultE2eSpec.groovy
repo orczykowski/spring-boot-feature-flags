@@ -1,30 +1,26 @@
 package io.github.orczykowski.springbootfeatureflags.api
 
 import io.github.orczykowski.springbootfeatureflags.BaseIntegrationSpec
-import org.springframework.http.HttpHeaders
+import org.hamcrest.CoreMatchers
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
 
-import static org.springframework.http.RequestEntity.get
+import static io.restassured.RestAssured.given
 
 @TestPropertySource(properties = ['feature-flags.definitions='])
 class FeatureFlagEmptyResultE2eSpec extends BaseIntegrationSpec {
 
     def "should respond with empty list when is no defined feature flags"() {
         given:
-          def request = get(apiUrl("feature-flags"))
-                  .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                  .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                  .build()
+          def request = given(requestSpec())
+
         when:
-          def response = restTemplate.exchange(request, Map)
+          def response = request.get("feature-flags")
+
         then:
-          response.statusCode == HttpStatus.OK
-          response.body != null
-        and:
-          def body = response.body
-          body["featureFlags"] != null
-          body["featureFlags"] == []
+          response.then()
+                  .statusCode(HttpStatus.OK.value())
+                  .body("featureFlags", CoreMatchers.is([]))
     }
+
 }

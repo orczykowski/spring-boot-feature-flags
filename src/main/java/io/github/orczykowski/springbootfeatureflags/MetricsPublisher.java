@@ -20,11 +20,11 @@ class MetricsPublisher {
         this.meterRegistry = meterRegistry;
     }
 
-    void reportVerification(final FeatureFlagName flag, final Boolean verificationResult) {
+    void reportVerification(final FeatureFlagDefinition.FeatureFlagName flag, final Boolean verificationResult) {
         reportVerification(flag, null, verificationResult);
     }
 
-    void reportVerification(final FeatureFlagName flagName, final User user, final Boolean verificationResult) {
+    void reportVerification(final FeatureFlagDefinition.FeatureFlagName flagName, final FeatureFlagDefinition.User user, final Boolean verificationResult) {
         final var counter = Counter.builder(VERIFICATION_RESULT_COUNT)
                 .description(VERIFICATION_RESULT_COUNT_DESCRIPTION)
                 .tags(FLAG_NAME_TAG, flagName.toString());

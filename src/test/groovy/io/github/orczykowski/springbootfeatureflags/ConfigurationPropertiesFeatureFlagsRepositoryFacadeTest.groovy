@@ -3,7 +3,7 @@ package io.github.orczykowski.springbootfeatureflags
 import spock.lang.Specification
 import spock.lang.Subject
 
-import static io.github.orczykowski.springbootfeatureflags.ConfigurationPropertiesFeatureFlagsRepositoryFacade.ConfigurationPropertiesFeatureFlagsRepository
+import static ConfigurationPropertiesFeatureFlagsRepositoryFacade.ConfigurationPropertiesFeatureFlagsRepository
 import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinitionTestFactory.disableForAll
 import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinitionTestFactory.disableForUser
 import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinitionTestFactory.enableForAll
@@ -36,7 +36,7 @@ class ConfigurationPropertiesFeatureFlagsRepositoryFacadeTest extends Specificat
 
     def "should return flag details"() {
         when:
-          def maybeDefinition = facade.findDefinition(deff.name())
+          def maybeDefinition = facade.findByName(deff.name())
 
         then:
           maybeDefinition.isPresent()
@@ -51,10 +51,10 @@ class ConfigurationPropertiesFeatureFlagsRepositoryFacadeTest extends Specificat
 
     def "should return empty when flag does not exist"() {
         given:
-          def flagName = new FeatureFlagName("non_existing_flag")
+          def flagName = new FeatureFlagDefinition.FeatureFlagName("non_existing_flag")
 
         when:
-          def maybeDefinition = facade.findDefinition(flagName)
+          def maybeDefinition = facade.findByName(flagName)
 
         then:
           maybeDefinition.isEmpty()

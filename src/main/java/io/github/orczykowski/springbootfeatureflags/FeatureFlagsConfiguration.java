@@ -1,40 +1,56 @@
 package io.github.orczykowski.springbootfeatureflags;
 
+import io.github.orczykowski.springbootfeatureflags.ConfigurationPropertiesFeatureFlagsRepositoryFacade.ConfigurationPropertiesFeatureFlagsRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @ConditionalOnProperty(name = {"feature-flags.enabled"}, havingValue = "true")
 @Configuration
-@EnableConfigurationProperties(ConfigurationPropertiesFeatureFlagsRepositoryFacade.ConfigurationPropertiesFeatureFlagsRepository.class)
+@EnableConfigurationProperties(ConfigurationPropertiesFeatureFlagsRepository.class)
 class FeatureFlagsConfiguration {
 
     @Bean
-    FeatureFlagRepository featureFlagRepository(final ConfigurationPropertiesFeatureFlagsRepositoryFacade.ConfigurationPropertiesFeatureFlagsRepository definitionsRepository) {
+    @ConditionalOnMissingBean
+    FeatureFlagSupplier featureFlagSupplier(final ConfigurationPropertiesFeatureFlagsRepository definitionsRepository) {
         return new ConfigurationPropertiesFeatureFlagsRepositoryFacade(definitionsRepository);
     }
 
     @Bean
-    FeatureFlagProvider featureFlagProvider(
-            final FeatureFlagRepository featureFlagRepository,
-            @Autowired(required = false) final UserContextProvider userContextProvider) {
-        return new FeatureFlagProvider(featureFlagRepository, userContextProvider);
+    @Primary
+    @ConditionalOnProperty(name = {"feature-flags.api.manage.enabled"}, havingValue = "true")
+    FeatureFlagRepository featureFlagDefinitionRepository(final ConfigurationPropertiesFeatureFlagsRepository definitionsRepository) {
+        return new ConfigurationPropertiesFeatureFlagsRepositoryFacade(definitionsRepository);
     }
 
     @Bean
-    FeatureFlagVerifier featureFlagVerifier(final FeatureFlagRepository featureFlagRepository,
+    EnabledFeatureFlagNameProvider featureFlagProvider(
+            final FeatureFlagSupplier featureFlagSupplier,
+            @Autowired(required = false) final UserContextProvider userContextProvider) {
+        return new EnabledFeatureFlagNameProvider(featureFlagSupplier, userContextProvider);
+    }
+
+    @Bean
+    FeatureFlagVerifier featureFlagVerifier(final FeatureFlagSupplier featureFlagSupplier,
                                             @Autowired(required = false) final MetricsPublisher metricsPublisher,
                                             @Autowired(required = false) final UserContextProvider userContextProvider) {
-        return new FeatureFlagVerifier(featureFlagRepository, userContextProvider, metricsPublisher);
+        return new FeatureFlagVerifier(featureFlagSupplier, userContextProvider, metricsPublisher);
     }
 
     @Bean
     @ConditionalOnProperty(name = {"feature-flags.metrics.enabled"}, havingValue = "true")
-        //TODO  @ConditionalOnBean(MeterRegistry.class)
     MetricsPublisher metricsPublisher(final MeterRegistry meterRegistry) {
         return new MetricsPublisher(meterRegistry);
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = {"feature-flags.api.manage.enabled"}, havingValue = "true")
+    FeatureFlagManager featureFlagManager(final FeatureFlagRepository repository) {
+        return new FeatureFlagManager(repository);
     }
 }
