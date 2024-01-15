@@ -32,7 +32,7 @@ public class FeatureFlagVerifier {
      * @param featureFlagName - feature flag name which we want to verify
      * @return returns true / false depending on whether the flag is enabled or disabled. Depending on the configuration, it takes into account the user's contex
      */
-    public boolean verify(final FeatureFlagDefinition.FeatureFlagName featureFlagName) {
+    public boolean verify(final FeatureFlagName featureFlagName) {
         if (Objects.isNull(featureFlagName)) {
             log.warn("Try verify null feature flag name.");
             return false;
@@ -57,7 +57,7 @@ public class FeatureFlagVerifier {
         return enableForALlUser;
     }
 
-    private boolean isEnableForUser(final FeatureFlagDefinition flag, final FeatureFlagDefinition.User user) {
+    private boolean isEnableForUser(final FeatureFlagDefinition flag, final User user) {
         final boolean enableForUser = flag.isEnableForUser(user);
         if (Objects.nonNull(metricsPublisher)) {
             metricsPublisher.reportVerification(flag.name(), user, enableForUser);
@@ -69,7 +69,7 @@ public class FeatureFlagVerifier {
         return Optional.ofNullable(userContextProvider);
     }
 
-    private boolean noFlagFound(FeatureFlagDefinition.FeatureFlagName flagName) {
+    private boolean noFlagFound(FeatureFlagName flagName) {
         log.warn("Feature Flag definition with name {} does not exist.", flagName);
         if (Objects.nonNull(metricsPublisher)) {
             metricsPublisher.reportFlagNotFound();

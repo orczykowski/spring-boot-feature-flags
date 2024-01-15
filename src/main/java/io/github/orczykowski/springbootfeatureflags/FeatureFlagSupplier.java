@@ -21,6 +21,6 @@ public interface FeatureFlagSupplier {
      * @param featureFlagName flag name
      * @return may return Feature flag definition or empty
      */
-    Optional<FeatureFlagDefinition> findByName(FeatureFlagDefinition.FeatureFlagName featureFlagName);
+    Optional<FeatureFlagDefinition> findByName(FeatureFlagName featureFlagName);
 
 }

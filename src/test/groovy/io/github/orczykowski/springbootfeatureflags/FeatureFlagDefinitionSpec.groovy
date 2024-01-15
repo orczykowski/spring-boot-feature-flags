@@ -2,13 +2,13 @@ package io.github.orczykowski.springbootfeatureflags
 
 import spock.lang.Specification
 
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.ANYBODY
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.NOBODY
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.RESTRICTED
+import static FeatureFlagState.ANYBODY
+import static FeatureFlagState.NOBODY
+import static FeatureFlagState.RESTRICTED
 
 class FeatureFlagDefinitionSpec extends Specification {
-    private static final NAME = new FeatureFlagDefinition.FeatureFlagName("laCucaracha")
-    private static final USER = new FeatureFlagDefinition.User("SOY_CAPITAN")
+    private static final NAME = new FeatureFlagName("laCucaracha")
+    private static final USER = new User("SOY_CAPITAN")
 
 
     def "should not create Feature flag without obligatory data"() {
@@ -83,7 +83,7 @@ class FeatureFlagDefinitionSpec extends Specification {
           ANYBODY    | Set.of()                                            || true
           ANYBODY    | Set.of(USER)                                        || true
           RESTRICTED | Set.of(USER)                                        || true
-          RESTRICTED | Set.of(new FeatureFlagDefinition.User("El Polaco")) || false
+          RESTRICTED | Set.of(new User("El Polaco")) || false
           NOBODY     | null                                                || false
           NOBODY     | Set.of()                                            || false
           NOBODY     | Set.of(USER)                                        || false
@@ -132,7 +132,7 @@ class FeatureFlagDefinitionSpec extends Specification {
           def featureFlag = new FeatureFlagDefinition(NAME, RESTRICTED, Set.of(USER))
 
         and:
-          def batman = new FeatureFlagDefinition.User("Batman")
+          def batman = new User("Batman")
           def newEntitledUsers = Set.of(batman)
 
         when:

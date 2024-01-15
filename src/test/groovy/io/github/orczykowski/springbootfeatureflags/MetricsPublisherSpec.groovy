@@ -9,8 +9,8 @@ import spock.lang.Specification
 import spock.lang.Subject
 
 class MetricsPublisherSpec extends Specification {
-    private static final FeatureFlagDefinition.FeatureFlagName FLAG_NAME = new FeatureFlagDefinition.FeatureFlagName("test")
-    private static final FeatureFlagDefinition.User USER_1 = new FeatureFlagDefinition.User("bob")
+    private static final FeatureFlagName FLAG_NAME = new FeatureFlagName("test")
+    private static final User USER_1 = new User("bob")
     private static final double EPSILON = 0.0000000001d
 
     private MeterRegistry registry = new SimpleMeterRegistry()
@@ -63,7 +63,7 @@ class MetricsPublisherSpec extends Specification {
           metric.id.description == "[Feature flags] Number of feature flag verification"
     }
 
-    private def findUserMetric(FeatureFlagDefinition.FeatureFlagName flagName, FeatureFlagDefinition.User user, boolean verificationResult) {
+    private def findUserMetric(FeatureFlagName flagName, User user, boolean verificationResult) {
         def metric = findVerificationMetric(flagName, verificationResult)
         assert metric != null
         if (!metric.id.tags.contains(Tag.of("user", user.toString()))) {
@@ -72,7 +72,7 @@ class MetricsPublisherSpec extends Specification {
         metric
     }
 
-    private def findVerificationMetric(FeatureFlagDefinition.FeatureFlagName flagName, boolean verificationResult) {
+    private def findVerificationMetric(FeatureFlagName flagName, boolean verificationResult) {
         def metric = registry.meters.find {
             it.id.name == "feature_flags_verification_result.count"
                     && it.id.tags.contains(Tag.of("flag_name", flagName.value()))

@@ -11,7 +11,7 @@ import static java.util.stream.Collectors.toUnmodifiableSet;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
-@ConditionalOnExpression("${feature-flags.enabled} and ${feature-flags.api.expose.enabled}")
+@ConditionalOnExpression(value = "${feature-flags.enabled:false} and ${feature-flags.api.expose.enabled:false}")
 class FeatureFlagPresenterApi {
     private final EnabledFeatureFlagNameProvider enabledFeatureFlagNameProvider;
 
@@ -19,9 +19,10 @@ class FeatureFlagPresenterApi {
         this.enabledFeatureFlagNameProvider = enabledFeatureFlagNameProvider;
     }
 
-    @GetMapping(path = "${feature-flags.api.expose.path:/feature-flags}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "${feature-flags.api.expose.path:/feature-flags}",
+            produces = APPLICATION_JSON_VALUE)
     FeatureFlagsResponse getFeatureFlags() {
-        return enabledFeatureFlagNameProvider.provide().map(FeatureFlagDefinition.FeatureFlagName::toString).collect(collectingAndThen(toUnmodifiableSet(), FeatureFlagsResponse::new));
+        return enabledFeatureFlagNameProvider.provide().map(FeatureFlagName::toString).collect(collectingAndThen(toUnmodifiableSet(), FeatureFlagsResponse::new));
     }
 
     record FeatureFlagsResponse(Set<String> featureFlags) {

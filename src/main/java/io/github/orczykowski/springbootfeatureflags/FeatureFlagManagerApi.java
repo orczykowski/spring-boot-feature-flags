@@ -1,10 +1,9 @@
 package io.github.orczykowski.springbootfeatureflags;
 
 import io.github.orczykowski.springbootfeatureflags.FeatureFlagCommand.UpsertFeatureFlagCommand;
-import io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagName;
-import io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +22,8 @@ import java.util.stream.Collectors;
 
 
 @RestController
-@ConditionalOnExpression("${feature-flags.enabled} and ${feature-flags.api.manage.enabled}")
-@RequestMapping("${feature-flags.manage.path:/manage/feature-flags}")
+@ConditionalOnExpression(value = "${feature-flags.enabled:false} and ${feature-flags.api.manage.enabled:false}")
+@RequestMapping(value = "${feature-flags.manage.path:/manage/feature-flags}", produces = MediaType.APPLICATION_JSON_VALUE)
 class FeatureFlagManagerApi {
     private final FeatureFlagManager featureFlagManager;
     private final FeatureFlagRepository featureFlagRepository;
@@ -34,14 +33,18 @@ class FeatureFlagManagerApi {
         this.featureFlagRepository = featureFlagRepository;
     }
 
-    @PostMapping()
+    @PostMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     FeatureFlagDefinitionDto create(@RequestBody final FeatureFlagDefinitionDto request) {
         var featureFlag = featureFlagManager.create(request.asUpsertCommand());
         return FeatureFlagDefinitionDto.from(featureFlag);
     }
 
-    @PutMapping("/{featureFlagName}")
+    @PutMapping(path = "/{featureFlagName}",
+            produces = MediaType.APPLICATION_JSON_VALUE,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     void update(@PathVariable("featureFlagName") final String featureFlagName,
                 @RequestBody final UpdateRequest request) {
@@ -65,7 +68,7 @@ class FeatureFlagManagerApi {
         static FeatureFlagDefinitionDto from(final FeatureFlagDefinition definition) {
             return definition.entitledUsers()
                     .stream()
-                    .map(FeatureFlagDefinition.User::toString)
+                    .map(User::toString)
                     .collect(Collectors.collectingAndThen(Collectors.toUnmodifiableSet(),
                             users -> new FeatureFlagDefinitionDto(
                                     definition.name().toString(),
@@ -76,7 +79,7 @@ class FeatureFlagManagerApi {
         UpsertFeatureFlagCommand asUpsertCommand() {
             final var entitledUsers = Objects.requireNonNullElse(this.entitledUsers, new HashSet<String>())
                     .stream()
-                    .map(FeatureFlagDefinition.User::new)
+                    .map(User::new)
                     .collect(Collectors.toSet());
             return new UpsertFeatureFlagCommand(
                     new FeatureFlagName(name),
@@ -92,7 +95,7 @@ class FeatureFlagManagerApi {
         UpsertFeatureFlagCommand asUpsertCommand(final String name) {
             final var users = Objects.requireNonNullElse(entitledUsers, new HashSet<String>())
                     .stream()
-                    .map(FeatureFlagDefinition.User::new)
+                    .map(User::new)
                     .collect(Collectors.toSet());
 
             return new UpsertFeatureFlagCommand(new FeatureFlagName(name), enabled, users);

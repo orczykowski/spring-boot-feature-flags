@@ -12,7 +12,7 @@ public sealed interface FeatureFlagCommand permits FeatureFlagCommand.UpsertFeat
      *
      * @param flagName - name of the flag which is to be deleted
      */
-    record DeleteFeatureFlagCommand(FeatureFlagDefinition.FeatureFlagName flagName) implements FeatureFlagCommand {
+    record DeleteFeatureFlagCommand(FeatureFlagName flagName) implements FeatureFlagCommand {
         /**
          * Constructor
          *
@@ -32,9 +32,9 @@ public sealed interface FeatureFlagCommand permits FeatureFlagCommand.UpsertFeat
      * @param enabled  - flag status, cannot be null
      * @param users    - list of users for whom the flag will be enabled
      */
-    record UpsertFeatureFlagCommand(FeatureFlagDefinition.FeatureFlagName flagName,
-                                    FeatureFlagDefinition.FeatureFlagState enabled,
-                                    Set<FeatureFlagDefinition.User> users) implements FeatureFlagCommand {
+    record UpsertFeatureFlagCommand(FeatureFlagName flagName,
+                                    FeatureFlagState enabled,
+                                    Set<User> users) implements FeatureFlagCommand {
         /**
          * Cnstructor
          *

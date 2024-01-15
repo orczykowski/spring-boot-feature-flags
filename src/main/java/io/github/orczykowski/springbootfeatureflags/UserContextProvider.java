@@ -13,5 +13,5 @@ public interface UserContextProvider {
      *
      * @return may return information about user
      */
-    Optional<FeatureFlagDefinition.User> provide();
+    Optional<User> provide();
 }
