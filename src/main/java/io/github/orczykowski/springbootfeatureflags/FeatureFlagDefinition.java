@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 
-import static java.util.Optional.ofNullable;
-
 /**
  * Definition of Feature flag
  *
@@ -74,90 +72,4 @@ public record FeatureFlagDefinition(FeatureFlagName name, FeatureFlagState enabl
         return new FeatureFlagDefinition(name, state, users);
     }
 
-    /**
-     * List of possible state of feature flag
-     */
-    public enum FeatureFlagState {
-        /**
-         * flag will be enabled for everyone
-         */
-        ANYBODY,
-        /**
-         * flag will be disabled
-         */
-        NOBODY,
-        /**
-         * flag will be limited to a specific list of user
-         */
-        RESTRICTED
-    }
-
-    /**
-     * ValueObject representing feature flag name
-     *
-     * @param value - unique name of feature flag
-     */
-    public record FeatureFlagName(String value) {
-        private static final int MAX_LENGTH = 120;
-
-        /**
-         * Constructor
-         *
-         * @param value name of feature flag
-         */
-        public FeatureFlagName(final String value) {
-            validate(value);
-            this.value = value.trim();
-        }
-
-        private static void validate(final String value) {
-            if (Objects.isNull(value) || value.isBlank()) {
-                throw new InvalidFeatureFlagsException("Feature flag name can not be null or blank");
-            }
-            if (value.length() > MAX_LENGTH) {
-                throw new InvalidFeatureFlagsException("Feature flag name is too long");
-            }
-        }
-
-        @Override
-        public String toString() {
-            return value;
-        }
-    }
-
-    /**
-     * ValueObject representing a user/user group from an external system. Used when RESTRICTED is used
-     *
-     * @param id - unique user ID or unique user group ID. Delivered externally (via external application)
-     */
-    public record User(String id) {
-        /**
-         * Constructor
-         *
-         * @param id unique user ID or unique user group ID
-         */
-        public User {
-            if (Objects.isNull(id) || id.isBlank()) {
-                throw invalidIdException();
-            }
-        }
-
-        /**
-         * Constructor
-         *
-         * @param id unique user ID or unique user group ID
-         */
-        public User(final Number id) {
-            this(ofNullable(id).map(Object::toString).orElseThrow(User::invalidIdException));
-        }
-
-        private static InvalidFeatureFlagsException invalidIdException() {
-            return new InvalidFeatureFlagsException("User identifier cannot be null or blank.");
-        }
-
-        @Override
-        public String toString() {
-            return id;
-        }
-    }
 }

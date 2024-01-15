@@ -49,24 +49,32 @@ Library:
 <dependency>
     <groupId>io.github.orczykowski</groupId>
     <artifactId>springboot-feature-flags</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
 or:
 
 ```groovy
-    implementation 'io.github.orczykowski:springboot-feature-flag:1.0.0'
+    implementation 'io.github.orczykowski:springboot-feature-flag:1.0.1'
 ```
 
-2. Enable feature-flags in properties file:
+2. Add 'io.github.orczykowski' to scanned packages:
+```java
+@SpringBootApplication(
+        scanBasePackages = {
+                "io.github.orczykowski"
+        })
+```
+
+3. Enable feature-flags in properties file:
 
 ```yaml
 feature-flags:
   enabled: true
 ```
 
-3. Define feature flags
+4. Define feature flags
    You can define two type of feature flags. Allowing you to enable functionality globally or only for specific users.
    If you want to be able to define feature flags for specific user, you need to create a spring Bean implementing
    `UserContextProvider`. More about how to configure UserContextProvider [here](#user-context-provider)
@@ -81,6 +89,8 @@ and:
 
 ```yaml
 feature-flags:
+  enabled: true
+  
   definitions:
     - name: FLAG_1
       enabled: ANYBODY
@@ -109,6 +119,8 @@ Now You can define entitled users in Feature Flag configuration:
 
 ```yaml
 feature-flags:
+  enabled: true
+  
   definitions:
     - name: FLAG_1
       enabled: RESTRICTED
@@ -147,6 +159,8 @@ feature-flags:
 
   ```yaml
 feature-flags:
+  enabled: true
+  
   api:
     expose:
       enabled: true
@@ -156,6 +170,8 @@ feature-flags:
 
   ```yaml
 feature-flags:
+  enabled: true
+  
   api:
     expose:
       path: my-feature-flags
@@ -245,7 +261,7 @@ feature-flags:
   ```yaml
 feature-flags:
   api:
-    menage:
+    manage:
       enabled: true
 ```
 
@@ -253,8 +269,10 @@ feature-flags:
 
 ```yaml
 feature-flags:
+  enabled: true
+  
   api:
-    menage:
+    manage:
       path: my-admin-feature-flags
 ```
 
@@ -300,6 +318,26 @@ public interface FeatureFlagRepository {
 }
 ```
 
+### Full possible configuration example
+```yaml
+feature-flags:
+  enabled: true
+  api:
+    expose:
+      enabled: true
+      path: my-feature-flags
+    manage:
+      enabled: true
+      path: my-admin-feature-flags
+  definitions:
+    - name: FLAG_1
+      enabled: ANYBODY
+    - name: FLAG_2
+      enabled: ANYBODY
+    - name: FLAG_3
+      enabled: RESTRICTED
+
+```
 ## How to contribute
 
 Its open source so feel free to contribute. Create pull request with some description what you want change / add, write

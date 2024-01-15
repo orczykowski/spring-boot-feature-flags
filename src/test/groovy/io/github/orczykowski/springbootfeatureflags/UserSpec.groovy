@@ -7,7 +7,7 @@ class UserSpec extends Specification {
 
     def "should print user name without any extra signs"() {
         given:
-          def name = new FeatureFlagDefinition.User("gustaw+1")
+          def name = new User("gustaw+1")
 
         expect:
           name.toString() == "gustaw+1"
@@ -15,7 +15,7 @@ class UserSpec extends Specification {
 
     def "should not create User with null or blank string"() {
         when:
-          new FeatureFlagDefinition.User((String) param)
+          new User((String) param)
 
         then:
           def ex = thrown(InvalidFeatureFlagsException)
@@ -27,7 +27,7 @@ class UserSpec extends Specification {
 
     def "should not create User with null"() {
         when:
-          new FeatureFlagDefinition.User((Number) null)
+          new User((Number) null)
 
         then:
           def ex = thrown(InvalidFeatureFlagsException)
@@ -36,7 +36,7 @@ class UserSpec extends Specification {
 
     def "should create user from string value"() {
         when:
-          def user = new FeatureFlagDefinition.User("USER_123")
+          def user = new User("USER_123")
 
         then:
           user != null
@@ -45,7 +45,7 @@ class UserSpec extends Specification {
 
     def "should create user from numeric value"() {
         when:
-          def user = new FeatureFlagDefinition.User(id)
+          def user = new User(id)
 
         then:
           user != null

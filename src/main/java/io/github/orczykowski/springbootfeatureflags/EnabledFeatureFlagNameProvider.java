@@ -14,7 +14,7 @@ class EnabledFeatureFlagNameProvider {
         this.userContextProvider = userContextProvider;
     }
 
-    Stream<FeatureFlagDefinition.FeatureFlagName> provide() {
+    Stream<FeatureFlagName> provide() {
         return featureFlagSupplier.findAllEnabledFeatureFlags()
                 .filter(FeatureFlagDefinition::isEnable)
                 .filter(this::filterForUserIfNeeded)

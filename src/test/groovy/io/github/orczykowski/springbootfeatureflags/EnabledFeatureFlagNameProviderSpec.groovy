@@ -4,19 +4,19 @@ import spock.lang.Specification
 
 import java.util.stream.Stream
 
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.ANYBODY
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.NOBODY
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.RESTRICTED
+import static FeatureFlagState.ANYBODY
+import static FeatureFlagState.NOBODY
+import static FeatureFlagState.RESTRICTED
 
 class EnabledFeatureFlagNameProviderSpec extends Specification {
-    private static final FeatureFlagDefinition.User USER_1 = new FeatureFlagDefinition.User("123")
-    private static final FeatureFlagDefinition.User USER_2 = new FeatureFlagDefinition.User("567")
+    private static final User USER_1 = new User("123")
+    private static final User USER_2 = new User("567")
 
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_ALL_1"), ANYBODY, null)
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_2 = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_ALL_2"), ANYBODY, null)
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_1 = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_USER_1"), RESTRICTED, Set.of(USER_1))
-    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_2 = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("FOR_USER_2"), RESTRICTED, Set.of(USER_2))
-    private static final FeatureFlagDefinition DISABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagDefinition.FeatureFlagName("DISABLED"), NOBODY, Set.of())
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagName("FOR_ALL_1"), ANYBODY, null)
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_2 = new FeatureFlagDefinition(new FeatureFlagName("FOR_ALL_2"), ANYBODY, null)
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_1 = new FeatureFlagDefinition(new FeatureFlagName("FOR_USER_1"), RESTRICTED, Set.of(USER_1))
+    private static final FeatureFlagDefinition ENABLED_FEATURE_FLAG_FOR_USER_2 = new FeatureFlagDefinition(new FeatureFlagName("FOR_USER_2"), RESTRICTED, Set.of(USER_2))
+    private static final FeatureFlagDefinition DISABLED_FEATURE_FLAG = new FeatureFlagDefinition(new FeatureFlagName("DISABLED"), NOBODY, Set.of())
 
     private FeatureFlagSupplier flagRepository = Mock(FeatureFlagSupplier)
     private UserContextProvider userContextProvider = Mock(UserContextProvider)

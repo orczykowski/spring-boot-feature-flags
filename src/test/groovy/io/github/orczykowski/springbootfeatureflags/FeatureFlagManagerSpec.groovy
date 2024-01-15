@@ -1,11 +1,11 @@
 package io.github.orczykowski.springbootfeatureflags
 
-import io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagName
+
 import spock.lang.Specification
 import spock.lang.Subject
 
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.ANYBODY
-import static io.github.orczykowski.springbootfeatureflags.FeatureFlagDefinition.FeatureFlagState.NOBODY
+import static FeatureFlagState.ANYBODY
+import static FeatureFlagState.NOBODY
 
 class FeatureFlagManagerSpec extends Specification {
     private static final FeatureFlagName NAME = new FeatureFlagName("Gustaw")
@@ -54,7 +54,7 @@ class FeatureFlagManagerSpec extends Specification {
           thrown(DuplicatedFeatureFlagException)
     }
 
-    def "should throw exception when try create feature flag from null command"() {
+    def "should throw exception when try update feature flag from null command"() {
         when:
           manager.update(null)
 

@@ -10,7 +10,7 @@ public interface MetricsPublisher {
      * @param flag               feature flag name which we want to verify
      * @param verificationResult verification result
      */
-    void reportVerification(FeatureFlagDefinition.FeatureFlagName flag, Boolean verificationResult);
+    void reportVerification(FeatureFlagName flag, Boolean verificationResult);
 
     /**
      * reports feature flag usage statistics, taking into account user context
@@ -19,7 +19,7 @@ public interface MetricsPublisher {
      * @param user               user
      * @param verificationResult verification result
      */
-    void reportVerification(FeatureFlagDefinition.FeatureFlagName flagName, FeatureFlagDefinition.User user, Boolean verificationResult);
+    void reportVerification(FeatureFlagName flagName, User user, Boolean verificationResult);
 
     /**
      * reports the number of attempts to verify non-existent flags

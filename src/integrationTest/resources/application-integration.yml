@@ -1,8 +1,0 @@
-feature-flags:
-  enabled: true
-  api:
-    expose:
-      enabled: true
-    manage:
-      enabled: true
-

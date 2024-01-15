@@ -11,7 +11,7 @@ public interface FeatureFlagRepository extends FeatureFlagSupplier {
      *
      * @param flagName feature flag name
      */
-    void removeByName(FeatureFlagDefinition.FeatureFlagName flagName);
+    void removeByName(FeatureFlagName flagName);
 
     /**
      * store new or update feature flag

@@ -13,8 +13,8 @@ import static FeatureFlagDefinitionTestFactory.enableForUser
 
 class FeatureFlagVerifierSpec extends Specification {
 
-    private static final FeatureFlagDefinition.FeatureFlagName FLAG_NAME = new FeatureFlagDefinition.FeatureFlagName("FLAG_1")
-    private static final FeatureFlagDefinition.User USER = new FeatureFlagDefinition.User("USER_1")
+    private static final FeatureFlagName FLAG_NAME = new FeatureFlagName("FLAG_1")
+    private static final User USER = new User("USER_1")
 
     private InMemoryFakeLogger fakeLogger = new InMemoryFakeLogger()
     private FeatureFlagSupplier flagRepository = Stub(FeatureFlagSupplier)
@@ -131,7 +131,7 @@ class FeatureFlagVerifierSpec extends Specification {
           def verifier = new FeatureFlagVerifier(flagRepository, null, metricsPublisher)
 
         expect:
-          !verifier.verify(new FeatureFlagDefinition.FeatureFlagName("GUSTAW"))
+          !verifier.verify(new FeatureFlagName("GUSTAW"))
     }
 
     def "should publish information about verification result for user"() {
