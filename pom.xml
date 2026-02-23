@@ -3,25 +3,25 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.orczykowski</groupId>
     <artifactId>spring-boot-feature-flags</artifactId>
-    <version>1.0.1</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
     <name>spring-boot-feature-flags</name>
     <url>http://maven.apache.org</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <spring-boot.version>3.2.2</spring-boot.version>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <spring-boot.version>4.0.3</spring-boot.version>
         <!-- Tests       -->
-        <groovy.version>4.0.16</groovy.version>
-        <byte-buddy.version>1.14.10</byte-buddy.version>
-        <rest-assured.version>5.4.0</rest-assured.version>
-        <objenesis.version>3.3</objenesis.version>
-        <spock-bom.version>2.3-groovy-4.0</spock-bom.version>
+        <groovy.version>5.0.4</groovy.version>
+        <byte-buddy.version>1.17.0</byte-buddy.version>
+        <rest-assured.version>6.0.0</rest-assured.version>
+        <objenesis.version>3.4</objenesis.version>
+        <spock-bom.version>2.4-groovy-5.0</spock-bom.version>
         <!-- Tests plugins          -->
-        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
-        <gmavenplus-plugin.version>3.0.2</gmavenplus-plugin.version>
+        <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.5</maven-surefire-plugin.version>
+        <gmavenplus-plugin.version>4.3.1</gmavenplus-plugin.version>
 
         <!-- Publishing plugins        -->
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -30,7 +30,7 @@
         <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <checksum-maven-plugin.version>1.4</checksum-maven-plugin.version>
-        <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>3.5.5</maven-failsafe-plugin.version>
         <build-helper-maven-plugin.version>3.5.0</build-helper-maven-plugin.version>
     </properties>
 
@@ -173,15 +173,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${gmavenplus-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>

@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public sealed interface FeatureFlagCommand permits FeatureFlagCommand.UpsertFeatureFlagCommand, FeatureFlagCommand.DeleteFeatureFlagCommand {
     /**
-     * Command used to remove feature flag
+     * Command used to remove a feature flag
      *
      * @param flagName - name of the flag which is to be deleted
      */
