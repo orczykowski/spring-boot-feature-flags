@@ -3,24 +3,24 @@ package io.github.orczykowski.springbootfeatureflags;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-
 /**
- * interface returns basic information about flags
+ * Read-only supplier of feature flag definitions.
+ * Provides methods to look up feature flags by name and to retrieve all enabled flags.
  */
 public interface FeatureFlagSupplier {
+
     /**
-     * Returns a list of enabled feature flags
+     * Returns all enabled feature flag definitions.
      *
-     * @return stream of Feature Flag Definitions
+     * @return stream of enabled feature flag definitions
      */
     Stream<FeatureFlagDefinition> findAllEnabledFeatureFlags();
 
     /**
-     * searches for feature flag definitions by name
+     * Looks up a feature flag definition by name.
      *
-     * @param featureFlagName flag name
-     * @return may return Feature flag definition or empty
+     * @param featureFlagName the flag name to search for
+     * @return the feature flag definition, or empty if not found
      */
-    Optional<FeatureFlagDefinition> findByName(FeatureFlagName featureFlagName);
-
+    Optional<FeatureFlagDefinition> findByName(final FeatureFlagName featureFlagName);
 }

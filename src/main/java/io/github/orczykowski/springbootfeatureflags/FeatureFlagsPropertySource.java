@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @ConfigurationProperties(prefix = "feature-flags")
-record FeatureFlagsPropertySource(List<FeatureFlagDefinitionDto> definitions) {
+public record FeatureFlagsPropertySource(List<FeatureFlagDefinitionDto> definitions) {
     private static final Logger log = LoggerFactory.getLogger(FeatureFlagsPropertySource.class);
 
     public FeatureFlagsPropertySource {
@@ -20,17 +20,20 @@ record FeatureFlagsPropertySource(List<FeatureFlagDefinitionDto> definitions) {
         log.debug("all feature flags definitions: {}", definitions);
     }
 
-    record FeatureFlagDefinitionDto(String name, FeatureFlagState enabled, Set<String> entitledUsers) {
+    public record FeatureFlagDefinitionDto(String name, FeatureFlagState enabled, Set<String> entitledUsers) {
         @ConstructorBinding
         public FeatureFlagDefinitionDto {
         }
 
-        FeatureFlagDefinition asDefinition() {
-            var users = Objects.requireNonNullElse(entitledUsers, new HashSet<String>()).stream()
-                    .map(User::new)
-                    .collect(Collectors.toSet());
+        public FeatureFlagDefinition asDefinition() {
+            return new FeatureFlagDefinition(new FeatureFlagName(name), enabled);
+        }
 
-            return new FeatureFlagDefinition(new FeatureFlagName(name), enabled, users);
+        public FeatureFlagEntitledUsers asUsers() {
+            var users = Objects.requireNonNullElse(entitledUsers, new HashSet<String>()).stream()
+                    .map(FeatureFlagUser::new)
+                    .collect(Collectors.toSet());
+            return FeatureFlagEntitledUsers.of(users);
         }
     }
 

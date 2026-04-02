@@ -1,5 +1,7 @@
 package io.github.orczykowski.springbootfeatureflags
 
+import io.github.orczykowski.springbootfeatureflags.adapters.property.InMemoryFeatureFlagAssignmentRepository
+import io.github.orczykowski.springbootfeatureflags.adapters.property.PropertyFeatureFlagRepositoryAdapter
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -15,9 +17,10 @@ class FeatureFlagsRepositoryPropertySourceFacadeSpec extends Specification {
             disableForAllDto("flag_3"),
             disableForUserDto("flag_4", "456")]
     def repository = new FeatureFlagsPropertySource(definitions)
+    def assignmentRepository = new InMemoryFeatureFlagAssignmentRepository()
 
     @Subject
-    def facade = new FeatureFlagsRepositoryPropertySourceFacade(repository)
+    def facade = new PropertyFeatureFlagRepositoryAdapter(repository, assignmentRepository)
 
 
     def "should return only enabled feature flags"() {
@@ -69,6 +72,15 @@ class FeatureFlagsRepositoryPropertySourceFacadeSpec extends Specification {
 
         where:
           definitions << [null, []]
+    }
+
+    def "should populate assignments from property source"() {
+        when:
+          def users = assignmentRepository.findUsersByFlagName(new FeatureFlagName("flag_1"))
+
+        then:
+          users.size() == 1
+          users.contains(new FeatureFlagUser("123"))
     }
 
 }

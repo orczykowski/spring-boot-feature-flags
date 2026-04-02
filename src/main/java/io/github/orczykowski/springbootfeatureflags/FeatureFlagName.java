@@ -1,5 +1,7 @@
 package io.github.orczykowski.springbootfeatureflags;
 
+import io.github.orczykowski.springbootfeatureflags.exceptions.FeatureFlagInvalidFeatureFlagsException;
+
 import java.util.Objects;
 
 /**
@@ -22,10 +24,10 @@ public record FeatureFlagName(String value) {
 
     private static void validate(final String value) {
         if (Objects.isNull(value) || value.isBlank()) {
-            throw new InvalidFeatureFlagsException("Feature flag name can not be null or blank");
+            throw new FeatureFlagInvalidFeatureFlagsException("Feature flag name can not be null or blank");
         }
         if (value.length() > MAX_LENGTH) {
-            throw new InvalidFeatureFlagsException("Feature flag name is too long");
+            throw new FeatureFlagInvalidFeatureFlagsException("Feature flag name is too long");
         }
     }
 

@@ -1,6 +1,7 @@
 package io.github.orczykowski.springbootfeatureflags
 
-
+import io.github.orczykowski.springbootfeatureflags.infrastructure.FeatureFlagMetricsMeterRegistryPublisher
+import io.github.orczykowski.springbootfeatureflags.infrastructure.FeatureFlagMetricsPublisher
 import io.micrometer.core.instrument.Meter
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tag
@@ -10,13 +11,13 @@ import spock.lang.Subject
 
 class MetricsPublisherSpec extends Specification {
     private static final FeatureFlagName FLAG_NAME = new FeatureFlagName("test")
-    private static final User USER_1 = new User("bob")
+    private static final FeatureFlagUser USER_1 = new FeatureFlagUser("bob")
     private static final double EPSILON = 0.0000000001d
 
     private MeterRegistry registry = new SimpleMeterRegistry()
 
     @Subject
-    MetricsPublisher publisher = new FeatureFlagMetricsPublisher(registry)
+    FeatureFlagMetricsPublisher publisher = new FeatureFlagMetricsMeterRegistryPublisher(registry)
 
     def "should publish verification metrics for user"() {
         when:
@@ -63,7 +64,7 @@ class MetricsPublisherSpec extends Specification {
           metric.id.description == "[Feature flags] Number of feature flag verification"
     }
 
-    private def findUserMetric(FeatureFlagName flagName, User user, boolean verificationResult) {
+    private def findUserMetric(FeatureFlagName flagName, FeatureFlagUser user, boolean verificationResult) {
         def metric = findVerificationMetric(flagName, verificationResult)
         assert metric != null
         if (!metric.id.tags.contains(Tag.of("user", user.toString()))) {

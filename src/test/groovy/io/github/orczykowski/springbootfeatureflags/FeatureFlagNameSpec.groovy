@@ -1,6 +1,6 @@
 package io.github.orczykowski.springbootfeatureflags
 
-
+import io.github.orczykowski.springbootfeatureflags.exceptions.FeatureFlagInvalidFeatureFlagsException
 import spock.lang.Specification
 
 class FeatureFlagNameSpec extends Specification {
@@ -40,7 +40,7 @@ class FeatureFlagNameSpec extends Specification {
           new FeatureFlagName(param)
 
         then:
-          def ex = thrown(InvalidFeatureFlagsException)
+          def ex = thrown(FeatureFlagInvalidFeatureFlagsException)
           ex.message == "Feature flag name can not be null or blank"
 
         where:
@@ -52,7 +52,7 @@ class FeatureFlagNameSpec extends Specification {
           new FeatureFlagName("1" * 121)
 
         then:
-          def ex = thrown(InvalidFeatureFlagsException)
+          def ex = thrown(FeatureFlagInvalidFeatureFlagsException)
           ex.message == "Feature flag name is too long"
     }
 }

@@ -1,0 +1,19 @@
+feature-flags:
+  enabled: true
+  storage:
+    type: jpa
+  api:
+    expose:
+      enabled: true
+    manage:
+      enabled: true
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration
+      - org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration
+      - org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration

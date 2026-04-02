@@ -1,5 +1,6 @@
 package io.github.orczykowski.springbootfeatureflags
 
+import io.github.orczykowski.springbootfeatureflags.infrastructure.FeatureFlagMetricsPublisher
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.LoggerContext
@@ -14,12 +15,13 @@ import static FeatureFlagDefinitionTestFactory.enableForUser
 class FeatureFlagVerifierSpec extends Specification {
 
     private static final FeatureFlagName FLAG_NAME = new FeatureFlagName("FLAG_1")
-    private static final User USER = new User("USER_1")
+    private static final FeatureFlagUser USER = new FeatureFlagUser("USER_1")
 
     private InMemoryFakeLogger fakeLogger = new InMemoryFakeLogger()
     private FeatureFlagSupplier flagRepository = Stub(FeatureFlagSupplier)
-    private UserContextProvider userContextProvider = Stub(UserContextProvider)
-    private MetricsPublisher metricsPublisher = Mock(MetricsPublisher)
+    private FeatureFlagUserContextProvider userContextProvider = Stub(FeatureFlagUserContextProvider)
+    private FeatureFlagAssignmentSupplier assignmentSupplier = Stub(FeatureFlagAssignmentSupplier)
+    private FeatureFlagMetricsPublisher metricsPublisher = Mock(FeatureFlagMetricsPublisher)
 
     def setup() {
         Logger logger = LoggerFactory.getLogger(FeatureFlagVerifier.class)
@@ -28,8 +30,9 @@ class FeatureFlagVerifierSpec extends Specification {
         logger.addAppender(fakeLogger)
         fakeLogger.start()
         flagRepository = Stub(FeatureFlagSupplier)
-        userContextProvider = Stub(UserContextProvider)
-        metricsPublisher = Mock(MetricsPublisher)
+        userContextProvider = Stub(FeatureFlagUserContextProvider)
+        assignmentSupplier = Stub(FeatureFlagAssignmentSupplier)
+        metricsPublisher = Mock(FeatureFlagMetricsPublisher)
     }
 
     def "should return true when flag is defined and enabled for all users"() {
@@ -37,7 +40,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForAll(FLAG_NAME))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
 
         expect:
           verifier.verify(FLAG_NAME)
@@ -48,7 +51,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForAll(FLAG_NAME))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
 
         expect:
           !verifier.verify(null)
@@ -58,9 +61,10 @@ class FeatureFlagVerifierSpec extends Specification {
         given:
           userContextProvider.provide() >> Optional.of(USER)
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForUser(FLAG_NAME, USER))
+          assignmentSupplier.isUserAssigned(FLAG_NAME, USER) >> true
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
 
         expect:
           verifier.verify(FLAG_NAME)
@@ -71,7 +75,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(disableForAll(FLAG_NAME))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
 
         expect:
           !verifier.verify(FLAG_NAME)
@@ -83,7 +87,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(disableForUser(FLAG_NAME, USER))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
 
         expect:
           !verifier.verify(FLAG_NAME)
@@ -95,7 +99,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForUser(FLAG_NAME, USER))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
 
         expect:
           !verifier.verify(FLAG_NAME)
@@ -106,7 +110,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForAll(FLAG_NAME))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, null, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, null, assignmentSupplier, metricsPublisher)
 
         expect:
           verifier.verify(FLAG_NAME)
@@ -117,7 +121,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForAll(FLAG_NAME))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, null)
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, null)
 
         expect:
           verifier.verify(FLAG_NAME)
@@ -128,7 +132,7 @@ class FeatureFlagVerifierSpec extends Specification {
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForAll(FLAG_NAME))
 
         and:
-          def verifier = new FeatureFlagVerifier(flagRepository, null, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, null, assignmentSupplier, metricsPublisher)
 
         expect:
           !verifier.verify(new FeatureFlagName("GUSTAW"))
@@ -138,7 +142,8 @@ class FeatureFlagVerifierSpec extends Specification {
         given:
           userContextProvider.provide() >> Optional.of(USER)
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForUser(FLAG_NAME, USER))
-          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, metricsPublisher)
+          assignmentSupplier.isUserAssigned(FLAG_NAME, USER) >> true
+          def verifier = new FeatureFlagVerifier(flagRepository, userContextProvider, assignmentSupplier, metricsPublisher)
         when:
           verifier.verify(FLAG_NAME)
         then:
@@ -148,7 +153,7 @@ class FeatureFlagVerifierSpec extends Specification {
     def "should publish information about verification result"() {
         given:
           flagRepository.findByName(FLAG_NAME) >> Optional.of(enableForUser(FLAG_NAME, USER))
-          def verifier = new FeatureFlagVerifier(flagRepository, null, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, null, assignmentSupplier, metricsPublisher)
         when:
           verifier.verify(FLAG_NAME)
         then:
@@ -158,7 +163,7 @@ class FeatureFlagVerifierSpec extends Specification {
     def "information about a non-existent flag should be reported"() {
         given:
           flagRepository.findByName(FLAG_NAME) >> Optional.empty()
-          def verifier = new FeatureFlagVerifier(flagRepository, null, metricsPublisher)
+          def verifier = new FeatureFlagVerifier(flagRepository, null, assignmentSupplier, metricsPublisher)
         when:
           verifier.verify(FLAG_NAME)
         then:

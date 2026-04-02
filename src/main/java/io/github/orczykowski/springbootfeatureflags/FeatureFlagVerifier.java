@@ -1,5 +1,6 @@
 package io.github.orczykowski.springbootfeatureflags;
 
+import io.github.orczykowski.springbootfeatureflags.infrastructure.FeatureFlagMetricsPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,16 +14,19 @@ public class FeatureFlagVerifier {
 
     private static final Logger log = LoggerFactory.getLogger(FeatureFlagVerifier.class);
 
-    private final UserContextProvider userContextProvider;
+    private final FeatureFlagUserContextProvider userContextProvider;
     private final FeatureFlagSupplier featureFlagSupplier;
-    private final MetricsPublisher metricsPublisher;
+    private final FeatureFlagAssignmentSupplier assignmentSupplier;
+    private final FeatureFlagMetricsPublisher metricsPublisher;
 
 
     FeatureFlagVerifier(final FeatureFlagSupplier featureFlagSupplier,
-                        final UserContextProvider userContextProvider,
-                        final MetricsPublisher metricsPublisher) {
+                        final FeatureFlagUserContextProvider userContextProvider,
+                        final FeatureFlagAssignmentSupplier assignmentSupplier,
+                        final FeatureFlagMetricsPublisher metricsPublisher) {
         this.featureFlagSupplier = featureFlagSupplier;
         this.userContextProvider = userContextProvider;
+        this.assignmentSupplier = assignmentSupplier;
         this.metricsPublisher = metricsPublisher;
     }
 
@@ -44,7 +48,7 @@ public class FeatureFlagVerifier {
 
     private Boolean check(final FeatureFlagDefinition flag) {
         return maybeUserContextProvider()
-                .flatMap(UserContextProvider::provide)
+                .flatMap(FeatureFlagUserContextProvider::provide)
                 .map(user -> isEnableForUser(flag, user))
                 .orElseGet(() -> isEnableForALlUser(flag));
     }
@@ -57,15 +61,22 @@ public class FeatureFlagVerifier {
         return enableForALlUser;
     }
 
-    private boolean isEnableForUser(final FeatureFlagDefinition flag, final User user) {
-        final boolean enableForUser = flag.isEnableForUser(user);
-        if (Objects.nonNull(metricsPublisher)) {
-            metricsPublisher.reportVerification(flag.name(), user, enableForUser);
+    private boolean isEnableForUser(final FeatureFlagDefinition flag, final FeatureFlagUser user) {
+        boolean result;
+        if (flag.isEnableForALlUser()) {
+            result = true;
+        } else if (flag.isRestricted() && assignmentSupplier != null) {
+            result = assignmentSupplier.isUserAssigned(flag.name(), user);
+        } else {
+            result = false;
         }
-        return enableForUser;
+        if (Objects.nonNull(metricsPublisher)) {
+            metricsPublisher.reportVerification(flag.name(), user, result);
+        }
+        return result;
     }
 
-    private Optional<UserContextProvider> maybeUserContextProvider() {
+    private Optional<FeatureFlagUserContextProvider> maybeUserContextProvider() {
         return Optional.ofNullable(userContextProvider);
     }
 

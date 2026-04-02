@@ -8,19 +8,19 @@ import static io.github.orczykowski.springbootfeatureflags.FeatureFlagsPropertyS
 class FeatureFlagDefinitionTestFactory {
 
     static def enableForAll(FeatureFlagName name) {
-        new FeatureFlagDefinition(name, ANYBODY, [] as Set)
+        new FeatureFlagDefinition(name, ANYBODY)
     }
 
-    static def enableForUser(FeatureFlagName name, User userId) {
-        new FeatureFlagDefinition(name, RESTRICTED, [userId] as Set)
+    static def enableForUser(FeatureFlagName name, FeatureFlagUser userId) {
+        new FeatureFlagDefinition(name, RESTRICTED)
     }
 
     static def disableForAll(FeatureFlagName name) {
-        new FeatureFlagDefinition(name, NOBODY, [] as Set)
+        new FeatureFlagDefinition(name, NOBODY)
     }
 
-    static def disableForUser(FeatureFlagName name, User userId) {
-        new FeatureFlagDefinition(name, NOBODY, [userId] as Set)
+    static def disableForUser(FeatureFlagName name, FeatureFlagUser userId) {
+        new FeatureFlagDefinition(name, NOBODY)
     }
 
     static def enableForAll(String name) {
@@ -28,15 +28,15 @@ class FeatureFlagDefinitionTestFactory {
     }
 
     static def disableForAll(String name) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), NOBODY, [] as Set)
+        new FeatureFlagDefinition(new FeatureFlagName(name), NOBODY)
     }
 
     static def enableForUser(String name, String userId) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), RESTRICTED, [new User(userId)] as Set)
+        new FeatureFlagDefinition(new FeatureFlagName(name), RESTRICTED)
     }
 
     static def disableForUser(String name, String userId) {
-        new FeatureFlagDefinition(new FeatureFlagName(name), NOBODY, [new User(userId)] as Set)
+        new FeatureFlagDefinition(new FeatureFlagName(name), NOBODY)
     }
 
     static def enableForUserDto(String name, String user) {

@@ -1,0 +1,17 @@
+feature-flags:
+  enabled: true
+  storage:
+    type: mongodb
+  api:
+    expose:
+      enabled: true
+    manage:
+      enabled: true
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration
+      - org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration
+      - org.springframework.boot.data.jpa.autoconfigure.DataJpaRepositoriesAutoConfiguration
