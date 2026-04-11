@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 /**
  * Serves the feature flags admin panel as a single HTML page.
@@ -28,8 +29,9 @@ class FeatureFlagAdminPanelController {
     private final String htmlContent;
 
     FeatureFlagAdminPanelController(
-            @Value("${feature-flags.api.manage.path:/manage/feature-flags}") final String managePath) {
-        this.htmlContent = loadAndPrepareHtml(managePath);
+            @Value("${feature-flags.api.manage.path:/manage/feature-flags}") final String managePath,
+            @Value("${feature-flags.admin-panel.logo-url:}") final String logoUrl) {
+        this.htmlContent = loadAndPrepareHtml(managePath, logoUrl);
     }
 
     @GetMapping(
@@ -40,18 +42,28 @@ class FeatureFlagAdminPanelController {
         return htmlContent;
     }
 
-    private static String loadAndPrepareHtml(final String managePath) {
+    private static String loadAndPrepareHtml(final String managePath, final String logoUrl) {
         try {
             var html = loadClasspathResource("feature-flags-admin.html");
             var css = loadClasspathResource("feature-flags-admin.css");
             var js = loadClasspathResource("feature-flags-admin.js");
+            var resolvedLogoUrl = resolveLogoUrl(logoUrl);
             return html
                     .replace("{{INLINE_CSS}}", css)
                     .replace("{{INLINE_JS}}", js)
-                    .replace("{{MANAGE_API_BASE_PATH}}", managePath);
+                    .replace("{{MANAGE_API_BASE_PATH}}", managePath)
+                    .replace("{{LOGO_URL}}", resolvedLogoUrl);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to load feature-flags admin panel resources from classpath", e);
         }
+    }
+
+    private static String resolveLogoUrl(final String logoUrl) throws IOException {
+        if (logoUrl != null && !logoUrl.isBlank()) {
+            return logoUrl;
+        }
+        var svg = loadClasspathResource("logo.svg");
+        return "data:image/svg+xml;base64," + Base64.getEncoder().encodeToString(svg.getBytes(StandardCharsets.UTF_8));
     }
 
     private static String loadClasspathResource(final String name) throws IOException {

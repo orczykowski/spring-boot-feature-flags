@@ -1,6 +1,11 @@
-# Spring Boot Feature Flags
+<div>
+  <img src="src/main/resources/logo.svg" alt="Feature Flags Logo" width="300" align="left">
+  <h2 style="line-height:80px;">Spring Boot Feature Flags</h2>
+</div>
+<br clear="left">
 
-A lightweight, production-ready Spring Boot starter for feature flag management. Control application features globally or per user, manage flags at runtime via REST API, and track usage with Micrometer metrics.
+A lightweight, production-ready Spring Boot starter for feature flag management. Control application features globally
+or per user, manage flags at runtime via REST API, and track usage with Micrometer metrics.
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.orczykowski/spring-boot-feature-flags)](https://central.sonatype.com/artifact/io.github.orczykowski/spring-boot-feature-flags)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -15,15 +20,15 @@ A lightweight, production-ready Spring Boot starter for feature flag management.
 - [Verifying Flags in Code](#verifying-flags-in-code)
 - [User Context Provider](#user-context-provider)
 - [Storage Backends](#storage-backends)
-  - [Property (Default)](#property-default)
-  - [JPA](#jpa)
-  - [Redis](#redis)
-  - [MongoDB](#mongodb)
-  - [Custom Storage](#custom-storage)
+    - [Property (Default)](#property-default)
+    - [JPA](#jpa)
+    - [Redis](#redis)
+    - [MongoDB](#mongodb)
+    - [Custom Storage](#custom-storage)
 - [Database Schema (DDL)](#database-schema-ddl)
 - [REST APIs](#rest-apis)
-  - [Presenter API (Read-Only)](#presenter-api)
-  - [Management API (CRUD)](#management-api)
+    - [Presenter API (Read-Only)](#presenter-api)
+    - [Management API (CRUD)](#management-api)
 - [Admin Panel](#admin-panel)
 - [Metrics](#metrics)
 - [Tips and Best Practices](#tips-and-best-practices)
@@ -40,6 +45,7 @@ A lightweight, production-ready Spring Boot starter for feature flag management.
 **Maven:**
 
 ```xml
+
 <dependency>
     <groupId>io.github.orczykowski</groupId>
     <artifactId>spring-boot-feature-flags</artifactId>
@@ -72,7 +78,7 @@ feature-flags:
       enabled: ANYBODY
     - name: DARK_MODE
       enabled: RESTRICTED
-      entitledUsers: [user-101, user-202]
+      entitledUsers: [ user-101, user-202 ]
     - name: LEGACY_EXPORT
       enabled: NOBODY
 ```
@@ -80,6 +86,7 @@ feature-flags:
 2. Inject `FeatureFlagVerifier` and check flags:
 
 ```java
+
 @Service
 public class CheckoutService {
 
@@ -105,10 +112,10 @@ public class CheckoutService {
 feature-flags:
   enabled: true                            # Master switch (required)
 
-  definitions:                             # Feature flag definitions (property storage only)
+  definitions: # Feature flag definitions (property storage only)
     - name: FLAG_NAME                      # Unique name (max 120 characters)
       enabled: ANYBODY                     # State: ANYBODY | NOBODY | RESTRICTED
-      entitledUsers: [user1, user2]        # Required when state is RESTRICTED
+      entitledUsers: [ user1, user2 ]        # Required when state is RESTRICTED
 
   storage:
     type: property                         # Storage backend: property | jpa | redis | mongodb
@@ -128,33 +135,35 @@ feature-flags:
   admin-panel:
     enabled: false                         # Enable built-in admin panel UI
     path: /feature-flags-admin             # Custom admin panel path
+    logo-url:                              # Custom logo URL (default: built-in logo)
 
   metrics:
     enabled: false                         # Enable Micrometer metrics
 ```
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `feature-flags.enabled` | `boolean` | `false` | Master switch. Must be `true` for any feature to work. |
-| `feature-flags.storage.type` | `enum` | `property` | Storage backend: `property`, `jpa`, `redis`, `mongodb`. |
-| `feature-flags.storage.table-name` | `string` | `feature_flags` | Table name for JPA backend. |
-| `feature-flags.storage.collection-name` | `string` | `feature_flags` | Collection/hash key name for Redis/MongoDB. |
-| `feature-flags.storage.assignment-table-name` | `string` | `feature_flag_assignments` | User assignment table name (JPA). |
-| `feature-flags.storage.assignment-collection-name` | `string` | `feature_flag_assignments` | User assignment collection/hash key (Redis/MongoDB). |
-| `feature-flags.api.expose.enabled` | `boolean` | `false` | Enable the read-only presenter REST endpoint. |
-| `feature-flags.api.expose.path` | `string` | `/feature-flags` | Path for the presenter API. |
-| `feature-flags.api.manage.enabled` | `boolean` | `false` | Enable the CRUD management REST endpoints. |
-| `feature-flags.api.manage.path` | `string` | `/manage/feature-flags` | Path for the management API. |
-| `feature-flags.admin-panel.enabled` | `boolean` | `false` | Enable the built-in admin panel UI. Requires management API enabled. |
-| `feature-flags.admin-panel.path` | `string` | `/feature-flags-admin` | Path for the admin panel. |
-| `feature-flags.metrics.enabled` | `boolean` | `false` | Enable Micrometer metrics. Requires `MeterRegistry` on classpath. |
+| Property                                           | Type      | Default                    | Description                                                          |
+|----------------------------------------------------|-----------|----------------------------|----------------------------------------------------------------------|
+| `feature-flags.enabled`                            | `boolean` | `false`                    | Master switch. Must be `true` for any feature to work.               |
+| `feature-flags.storage.type`                       | `enum`    | `property`                 | Storage backend: `property`, `jpa`, `redis`, `mongodb`.              |
+| `feature-flags.storage.table-name`                 | `string`  | `feature_flags`            | Table name for JPA backend.                                          |
+| `feature-flags.storage.collection-name`            | `string`  | `feature_flags`            | Collection/hash key name for Redis/MongoDB.                          |
+| `feature-flags.storage.assignment-table-name`      | `string`  | `feature_flag_assignments` | User assignment table name (JPA).                                    |
+| `feature-flags.storage.assignment-collection-name` | `string`  | `feature_flag_assignments` | User assignment collection/hash key (Redis/MongoDB).                 |
+| `feature-flags.api.expose.enabled`                 | `boolean` | `false`                    | Enable the read-only presenter REST endpoint.                        |
+| `feature-flags.api.expose.path`                    | `string`  | `/feature-flags`           | Path for the presenter API.                                          |
+| `feature-flags.api.manage.enabled`                 | `boolean` | `false`                    | Enable the CRUD management REST endpoints.                           |
+| `feature-flags.api.manage.path`                    | `string`  | `/manage/feature-flags`    | Path for the management API.                                         |
+| `feature-flags.admin-panel.enabled`                | `boolean` | `false`                    | Enable the built-in admin panel UI. Requires management API enabled. |
+| `feature-flags.admin-panel.path`                   | `string`  | `/feature-flags-admin`     | Path for the admin panel.                                            |
+| `feature-flags.admin-panel.logo-url`               | `string`  | *(built-in logo)*          | Custom logo URL for the admin panel header.                          |
+| `feature-flags.metrics.enabled`                    | `boolean` | `false`                    | Enable Micrometer metrics. Requires `MeterRegistry` on classpath.    |
 
 ## Feature Flag States
 
-| State | Behavior |
-|-------|----------|
-| `ANYBODY` | Enabled for all users, regardless of user context. |
-| `NOBODY` | Disabled for everyone. |
+| State        | Behavior                                                                                                      |
+|--------------|---------------------------------------------------------------------------------------------------------------|
+| `ANYBODY`    | Enabled for all users, regardless of user context.                                                            |
+| `NOBODY`     | Disabled for everyone.                                                                                        |
 | `RESTRICTED` | Enabled only for users assigned to the flag. Requires a [`UserContextProvider`](#user-context-provider) bean. |
 
 ## Verifying Flags in Code
@@ -176,6 +185,7 @@ boolean isEnabled = featureFlags.verify(new FeatureFlagName("MY_FLAG"));
 To use `RESTRICTED` flags, implement the `UserContextProvider` functional interface and register it as a Spring bean:
 
 ```java
+
 @Bean
 public UserContextProvider userContextProvider() {
     return () -> {
@@ -192,14 +202,18 @@ The `User` record accepts both `String` and `Number` identifiers:
 
 ```java
 new User("user-101")   // String ID
-new User(42)           // Numeric ID
+new
+
+User(42)           // Numeric ID
 ```
 
-When no `UserContextProvider` is registered, all flags are evaluated globally (`RESTRICTED` flags will return `false` for every verification).
+When no `UserContextProvider` is registered, all flags are evaluated globally (`RESTRICTED` flags will return `false`for
+every verification).
 
 ## Storage Backends
 
-The library supports four storage backends out of the box. Each requires adding the corresponding Spring Boot starter to your classpath.
+The library supports four storage backends out of the box. Each requires adding the corresponding Spring Boot starter to
+your classpath.
 
 ### Property (Default)
 
@@ -215,11 +229,13 @@ feature-flags:
       enabled: ANYBODY
 ```
 
-> **Note:** Property storage keeps flags in a `ConcurrentHashMap`. Changes made via the management API are lost on restart and not shared across instances.
+> **Note:** Property storage keeps flags in a `ConcurrentHashMap`. Changes made via the management API are lost on
+> restart and not shared across instances.
 
 ### JPA
 
-Requires `spring-boot-starter-data-jpa` and a relational database driver on the classpath. The schema is automatically managed by Hibernate.
+Requires `spring-boot-starter-data-jpa` and a relational database driver on the classpath. The schema is automatically
+managed by Hibernate.
 
 ```yaml
 feature-flags:
@@ -229,6 +245,7 @@ feature-flags:
 ```
 
 ```xml
+
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -247,6 +264,7 @@ feature-flags:
 ```
 
 ```xml
+
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -265,6 +283,7 @@ feature-flags:
 ```
 
 ```xml
+
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-data-mongodb</artifactId>
@@ -276,6 +295,7 @@ feature-flags:
 For read-only verification, implement `FeatureFlagSupplier`:
 
 ```java
+
 @Bean
 public FeatureFlagSupplier featureFlagSupplier() {
     return new FeatureFlagSupplier() {
@@ -291,6 +311,7 @@ public FeatureFlagSupplier featureFlagSupplier() {
 For full CRUD with the management API, implement `FeatureFlagRepository`:
 
 ```java
+
 @Bean
 public FeatureFlagRepository featureFlagRepository() {
     return new FeatureFlagRepository() {
@@ -315,6 +336,7 @@ public FeatureFlagRepository featureFlagRepository() {
 For user assignment management, implement `FeatureFlagAssignmentRepository`:
 
 ```java
+
 @Bean
 public FeatureFlagAssignmentRepository featureFlagAssignmentRepository() {
     return new FeatureFlagAssignmentRepository() {
@@ -349,16 +371,36 @@ For JPA storage, Hibernate handles schema creation automatically. Below are the 
 ### PostgreSQL / MySQL
 
 ```sql
-CREATE TABLE IF NOT EXISTS feature_flags (
-    name    VARCHAR(120) PRIMARY KEY,
-    enabled VARCHAR(20)  NOT NULL
-);
+CREATE TABLE IF NOT EXISTS feature_flags
+(
+    name
+    VARCHAR
+(
+    120
+) PRIMARY KEY,
+    enabled VARCHAR
+(
+    20
+) NOT NULL
+    );
 
-CREATE TABLE IF NOT EXISTS feature_flag_assignments (
-    flag_name VARCHAR(120) NOT NULL,
-    user_id   VARCHAR(255) NOT NULL,
-    PRIMARY KEY (flag_name, user_id)
-);
+CREATE TABLE IF NOT EXISTS feature_flag_assignments
+(
+    flag_name
+    VARCHAR
+(
+    120
+) NOT NULL,
+    user_id VARCHAR
+(
+    255
+) NOT NULL,
+    PRIMARY KEY
+(
+    flag_name,
+    user_id
+)
+    );
 ```
 
 ### MongoDB
@@ -366,6 +408,7 @@ CREATE TABLE IF NOT EXISTS feature_flag_assignments (
 No schema creation required. Documents are created automatically:
 
 **feature_flags collection:**
+
 ```json
 {
   "_id": "NEW_CHECKOUT",
@@ -375,11 +418,15 @@ No schema creation required. Documents are created automatically:
 ```
 
 **feature_flag_assignments collection:**
+
 ```json
 {
   "_id": "DARK_MODE",
   "flagName": "DARK_MODE",
-  "userIds": ["user-101", "user-202"]
+  "userIds": [
+    "user-101",
+    "user-202"
+  ]
 }
 ```
 
@@ -387,7 +434,8 @@ No schema creation required. Documents are created automatically:
 
 ### Presenter API
 
-Read-only endpoint returning the names of feature flags enabled for the current user. Only enabled flags are returned to prevent leaking information about unreleased features.
+Read-only endpoint returning the names of feature flags enabled for the current user. Only enabled flags are returned to
+prevent leaking information about unreleased features.
 
 **Enable:**
 
@@ -405,7 +453,10 @@ feature-flags:
 
 ```json
 {
-  "featureFlags": ["NEW_CHECKOUT", "DARK_MODE"]
+  "featureFlags": [
+    "NEW_CHECKOUT",
+    "DARK_MODE"
+  ]
 }
 ```
 
@@ -440,7 +491,10 @@ Returns all defined feature flags with their assignments.
     {
       "name": "DARK_MODE",
       "enabled": "RESTRICTED",
-      "entitledUsers": ["user-101", "user-202"]
+      "entitledUsers": [
+        "user-101",
+        "user-202"
+      ]
     }
   ]
 }
@@ -456,62 +510,65 @@ Creates a new feature flag.
 {
   "name": "BETA_SEARCH",
   "enabled": "RESTRICTED",
-  "entitledUsers": ["user-101"]
+  "entitledUsers": [
+    "user-101"
+  ]
 }
 ```
 
-| Status | Description |
-|--------|-------------|
-| `201 Created` | Flag created successfully. |
-| `409 Conflict` | A flag with that name already exists. |
+| Status                     | Description                                                               |
+|----------------------------|---------------------------------------------------------------------------|
+| `201 Created`              | Flag created successfully.                                                |
+| `409 Conflict`             | A flag with that name already exists.                                     |
 | `422 Unprocessable Entity` | Invalid request (blank name, name exceeds 120 characters, invalid state). |
 
 #### `PUT /manage/feature-flags/{flagName}/enable`
 
 Enables a feature flag for everybody (sets state to `ANYBODY`).
 
-| Status | Description |
-|--------|-------------|
-| `200 OK` | Flag enabled. |
+| Status          | Description          |
+|-----------------|----------------------|
+| `200 OK`        | Flag enabled.        |
 | `404 Not Found` | Flag does not exist. |
 
 #### `PUT /manage/feature-flags/{flagName}/disable`
 
 Disables a feature flag for everybody (sets state to `NOBODY`).
 
-| Status | Description |
-|--------|-------------|
-| `200 OK` | Flag disabled. |
+| Status          | Description          |
+|-----------------|----------------------|
+| `200 OK`        | Flag disabled.       |
 | `404 Not Found` | Flag does not exist. |
 
 #### `POST /manage/feature-flags/{flagName}/users/{userId}`
 
 Adds a user to the flag's restricted list. Automatically sets the flag to `RESTRICTED` state.
 
-| Status | Description |
-|--------|-------------|
-| `200 OK` | User added. |
+| Status          | Description          |
+|-----------------|----------------------|
+| `200 OK`        | User added.          |
 | `404 Not Found` | Flag does not exist. |
 
 #### `DELETE /manage/feature-flags/{flagName}/users/{userId}`
 
 Removes a user from the flag's restricted list.
 
-| Status | Description |
-|--------|-------------|
+| Status   | Description   |
+|----------|---------------|
 | `200 OK` | User removed. |
 
 #### `DELETE /manage/feature-flags/{flagName}`
 
 Deletes a feature flag and all its user assignments.
 
-| Status | Description |
-|--------|-------------|
+| Status           | Description   |
+|------------------|---------------|
 | `204 No Content` | Flag deleted. |
 
 ## Admin Panel
 
-A built-in, single-page admin panel for managing feature flags directly from the browser. No external dependencies — pure HTML, CSS, and JavaScript served by the library itself.
+A built-in, single-page admin panel for managing feature flags directly from the browser. No external dependencies —
+pure HTML, CSS, and JavaScript served by the library itself.
 
 ![Admin Panel](docs/admin-panel.png)
 
@@ -529,7 +586,8 @@ feature-flags:
 
 Once enabled, open `/feature-flags-admin` (or your custom path) in a browser.
 
-**Requires** both `feature-flags.enabled` and `feature-flags.api.manage.enabled` to be `true`. The panel calls the management API endpoints under the hood.
+**Requires** both `feature-flags.enabled` and `feature-flags.api.manage.enabled` to be `true`. The panel calls the
+management API endpoints under the hood.
 
 **Features:**
 
@@ -552,19 +610,22 @@ feature-flags:
 
 ### Securing the Admin Panel
 
-> **The admin panel and management API have no built-in authentication or authorization.** Because the panel allows creating, modifying, and deleting feature flags, unauthorized access can directly impact application behavior in production. You **must** protect these endpoints before deploying.
+> **The admin panel and management API have no built-in authentication or authorization.** Because the panel allows
+> creating, modifying, and deleting feature flags, unauthorized access can directly impact application behavior in
+> production. You **must** protect these endpoints before deploying.
 
 **Recommended approach with Spring Security:**
 
 ```java
+
 @Bean
 public SecurityFilterChain featureFlagsSecurityFilterChain(HttpSecurity http) throws Exception {
     return http
-        .securityMatcher("/feature-flags-admin", "/manage/feature-flags/**")
-        .authorizeHttpRequests(auth -> auth
-            .anyRequest().hasRole("ADMIN"))
-        .httpBasic(Customizer.withDefaults())
-        .build();
+            .securityMatcher("/feature-flags-admin", "/manage/feature-flags/**")
+            .authorizeHttpRequests(auth -> auth
+                    .anyRequest().hasRole("ADMIN"))
+            .httpBasic(Customizer.withDefaults())
+            .build();
 }
 ```
 
@@ -574,7 +635,8 @@ public SecurityFilterChain featureFlagsSecurityFilterChain(HttpSecurity http) th
 - Use HTTPS to prevent credentials and flag data from being transmitted in plaintext
 - Consider network-level restrictions (VPN, IP allowlisting, internal load balancer) as an additional layer
 - Enable audit logging for all flag changes to maintain a trail of who changed what and when
-- In production, prefer keeping the admin panel disabled (`feature-flags.admin-panel.enabled=false`) and enabling it only when needed
+- In production, prefer keeping the admin panel disabled (`feature-flags.admin-panel.enabled=false`) and enabling it
+  only when needed
 
 ## Metrics
 
@@ -587,14 +649,15 @@ feature-flags:
     enabled: true
 ```
 
-| Metric | Type | Tags | Description |
-|--------|------|------|-------------|
-| `feature_flags_verification_result.count` | Counter | `flag_name`, `user`, `result` | Incremented on each flag verification. |
-| `feature_flags_not_existing_flag.count` | Counter | -- | Incremented when a non-existent flag is verified. |
+| Metric                                    | Type    | Tags                          | Description                                       |
+|-------------------------------------------|---------|-------------------------------|---------------------------------------------------|
+| `feature_flags_verification_result.count` | Counter | `flag_name`, `user`, `result` | Incremented on each flag verification.            |
+| `feature_flags_not_existing_flag.count`   | Counter | --                            | Incremented when a non-existent flag is verified. |
 
 You can provide a custom `MetricsPublisher` bean to replace the default Micrometer implementation:
 
 ```java
+
 @Bean
 public MetricsPublisher metricsPublisher() {
     return new MyCustomMetricsPublisher();
@@ -603,7 +666,8 @@ public MetricsPublisher metricsPublisher() {
 
 ## Tips and Best Practices
 
-**Create database indexes for production workloads.** Flag verification is typically called on every request. Adding indexes significantly improves lookup performance:
+**Create database indexes for production workloads.** Flag verification is typically called on every request. Adding
+indexes significantly improves lookup performance:
 
 ```sql
 -- Speeds up "find all assignments for a flag" queries
@@ -618,18 +682,45 @@ CREATE INDEX IF NOT EXISTS idx_feature_flag_assignments_user_id
 For MongoDB, create indexes on the collections:
 
 ```javascript
-db.feature_flags.createIndex({ "name": 1 }, { unique: true });
-db.feature_flag_assignments.createIndex({ "flagName": 1 }, { unique: true });
-db.feature_flag_assignments.createIndex({ "userIds": 1 });
+db.feature_flags.createIndex({"name": 1}, {unique: true});
+db.feature_flag_assignments.createIndex({"flagName": 1}, {unique: true});
+db.feature_flag_assignments.createIndex({"userIds": 1});
 ```
 
-**Secure the management API.** The management endpoints allow creating, modifying, and deleting feature flags. Protect them with authentication and authorization (e.g., Spring Security) in production.
+**Secure the management API.** The management endpoints allow creating, modifying, and deleting feature flags. Protect
+them with authentication and authorization (e.g., Spring Security) in production.
 
-**Use caching for high-throughput scenarios.** When implementing custom storage backends, consider caching flag lookups to reduce database round-trips. Flag verification may be called on every incoming request.
+**Use caching for high-throughput scenarios.** When implementing custom storage backends, consider caching flag lookups
+to reduce database round-trips. Flag verification may be called on every incoming request.
 
-**Keep flag names short and descriptive.** Flag names are limited to 120 characters. Use uppercase snake_case for consistency (e.g., `NEW_CHECKOUT`, `ENABLE_DARK_MODE`).
+**Keep flag names short and descriptive.** Flag names are limited to 120 characters. Use uppercase snake_case for
+consistency (e.g., `NEW_CHECKOUT`, `ENABLE_DARK_MODE`).
 
-**Clean up stale flags.** Regularly review and remove feature flags that are no longer needed. Flags that are permanently enabled or disabled should eventually be removed and their conditional logic simplified.
+**Clean up stale flags.** Regularly review and remove feature flags that are no longer needed. Flags that are
+permanently enabled or disabled should eventually be removed and their conditional logic simplified.
+
+## Customizing the Admin Panel Logo
+
+The admin panel displays a built-in logo in the header. You can replace it with your own by setting
+`feature-flags.admin-panel.logo-url` to any image URL:
+
+```yaml
+feature-flags:
+  admin-panel:
+    enabled: true
+    logo-url: https://example.com/my-logo.svg
+```
+
+You can also use a data URI for an inline image:
+
+```yaml
+feature-flags:
+  admin-panel:
+    enabled: true
+    logo-url: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0i..."
+```
+
+When not set, the library uses its default logo. The logo is displayed at 36px height in the admin panel header.
 
 ## Contributing
 

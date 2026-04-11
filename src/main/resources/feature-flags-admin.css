@@ -82,16 +82,29 @@ body {
     padding: 16px 24px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: var(--shadow-sm);
 }
-.header-left { display: flex; align-items: center; gap: 12px; }
-.header h1 { font-size: 20px; font-weight: 600; }
-.header-icon { font-size: 24px; }
+.header-inner {
+    max-width: 960px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+.header-logo { height: 36px; width: auto; }
+.header-title {
+    font-size: 20px;
+    font-weight: 600;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
 .theme-toggle {
+    margin-left: auto;
     background: none;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
