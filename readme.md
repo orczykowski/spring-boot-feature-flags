@@ -43,14 +43,14 @@ A lightweight, production-ready Spring Boot starter for feature flag management.
 <dependency>
     <groupId>io.github.orczykowski</groupId>
     <artifactId>spring-boot-feature-flags</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 
 **Gradle:**
 
 ```groovy
-implementation 'io.github.orczykowski:spring-boot-feature-flags:2.1.0'
+implementation 'io.github.orczykowski:spring-boot-feature-flags:2.2.0'
 ```
 
 Add the library package to your component scan:
